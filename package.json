@@ -1,0 +1,32 @@
+{
+  "name": "hills",
+  "version": "1.0.0",
+  "description": "Generates hills.",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jimkang/hills.git"
+  },
+  "keywords": [],
+  "author": "Jim Kang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jimkang/hills/issues"
+  },
+  "homepage": "https://github.com/jimkang/hills",
+  "devDependencies": {
+    "browserify": "^14.5.0",
+    "uglify-es": "^3.1.9"
+  },
+  "dependencies": {
+    "basic-browser-request": "^8.0.0",
+    "d3-selection": "^1.2.0",
+    "handle-error-web": "^1.0.1",
+    "probable": "^2.1.1",
+    "route-state": "^1.1.2",
+    "standard-bail": "^2.0.1"
+  }
+}

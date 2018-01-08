@@ -1,0 +1,29 @@
+body {
+  font-family: 'Helvetica Neue';
+  background-color: black;
+}
+
+.hidden {
+  display: none !important;
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+#status-message {
+  background-color: #ffffee;
+}
+
+.hill-outline {
+  stroke: green;
+  stroke-width: 1;
+  fill: none;
+}
+
+.hill-outline circle {
+  fill: white;
+  stroke: none;
+}
+
+.board {
+  margin-top: 1em;
+}
