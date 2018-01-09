@@ -16,69 +16,72 @@ function renderHills({ levelSpecs = [[[50, 100]]] }) {
   levelSpecs.forEach(renderHillLevel);
 }
 
-function renderHillLevel(coords, level) {
-  // peakCoords.sort(aIsToTheLeftOfB);
-  // var coords = addInterstitials(extremeCoords);
-  renderPoints(coords);
-  console.log('coords', coords);
+function renderHillLevel(extremeCoords, level) {
+  var bezierCurves = curvesFromExtremes(extremeCoords);
+  renderCurvePoints(bezierCurves);
+  console.log('bezierCurves', bezierCurves);
 
-  var path = `M${coords[0].join(',')}`;
+  var path = `M ${extremeCoords[0].join(',')} `;
+  path += bezierCurves.map(pathStringForCurve).join('\n');
 
-  for (let i = 0; i < coords.length - 2; i += 1) {
-    // path += `S ${coords[i].join(',')} ${coords[i + 1].join(',')}\n`;
-    path += `C ${coords[i][0]},${coords[i+1][1]}
-      ${coords[i][0]},${coords[i+1][1]}
-      ${coords[i+1].join(',')}\n`;
-  }
-  path += `\nL100,${coords[coords.length - 1][1]} L100,100 L0,100Z`;
   console.log('path', path);
   outline
     .append('path')
     .attr('d', path)
-    .attr('transform', `translate(0, ${level * 10})`);
+    .attr('transform', `translate(0, ${level * 20})`);
 }
 
-function addInterstitials(peakCoords) {
-  var coords = [];
-  for (var i = 0; i < peakCoords.length - 1; ++i) {
-    coords.push(peakCoords[i]);
-    coords.push(averagePoints(peakCoords[i], peakCoords[i + 1]));
-  }
-  coords.push(peakCoords[peakCoords.length - 1]);
-  return coords;
+function pathStringForCurve(curve) {
+  return `C ${curve.srcCtrlPt.join(',')}
+  ${curve.destCtrlPt.join(',')}
+  ${curve.dest.join(',')}`;
 }
 
-function averagePoints(a, b) {
-  return [(+a[0] + +b[0]) / 2, (+a[1] + +b[1]) / 2];
-}
-
-function renderHillLevelLinear(peakCoords, level) {
-  // peakCoords.sort(aIsToTheLeftOfB);
-  var path = 'M0,50\n';
-  for (let i = 0; i < peakCoords.length; ++i) {
-    path += 'L' + peakCoords[i].join(',') + ' ';
-  }
-  path += '\nL100,50 L100,100 L0,100Z';
-  console.log(path);
-  outline
-    .append('path')
-    .attr('d', path)
-    // .attr(
-    //   'd',
-    //   `M0,40
-    //   L20,20
-    //   C40,0 80,0 100,20
-    //   L100,100 L0,100Z`
-    // )
-    .attr('transform', `translate(0, ${level * 10})`);
-}
-
-function renderPoints(points) {
-  var circles = outline.selectAll('circle').data(points);
-  circles.enter().append('circle').attr('r', 2)
-  .merge(circles)
+function renderCurvePoints(curves) {
+  var circles = outline
+    .selectAll('.curve-dest')
+    .data(curves.map(curve => curve.dest));
+  circles
+    .enter()
+    .append('circle')
+    .attr('r', 2)
+    .classed('curve-dest', true)
+    .merge(circles)
     .attr('cx', point => point[0])
     .attr('cy', point => point[1]);
+
+  var controlCircles = outline
+    .selectAll('.curve-control')
+    .data(
+      curves
+        .map(curve => curve.srcCtrlPt)
+        .concat(curves.map(curve => curve.destCtrlPt))
+    );
+  controlCircles
+    .enter()
+    .append('circle')
+    .attr('r', 1)
+    .classed('curve-control', true)
+    .merge(controlCircles)
+    .attr('cx', point => point[0])
+    .attr('cy', point => point[1]);
+}
+
+// Assumes extremes are sorted by x values, ascending.
+function curvesFromExtremes(extremes) {
+  var curves = [];
+  for (var i = 1; i < extremes.length; ++i) {
+    let dest = extremes[i];
+    let src = extremes[i - 1];
+    let xDistToPrev = dest[0] - src[0];
+
+    curves.push({
+      srcCtrlPt: [src[0] + xDistToPrev / 2, src[1]],
+      destCtrlPt: [dest[0] - xDistToPrev / 2, dest[1]],
+      dest
+    });
+  }
+  return curves;
 }
 
 module.exports = renderHills;

@@ -19,7 +19,12 @@ body {
   fill: none;
 }
 
-.hill-outline circle {
+.hill-outline .curve-dest {
+  fill: red;
+  stroke: none;
+}
+
+.hill-outline .curve-control {
   fill: white;
   stroke: none;
 }

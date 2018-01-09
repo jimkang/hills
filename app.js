@@ -18,7 +18,7 @@ function followRoute(routeDict) {
     let levelSpecs = [];
     let numberOfLevels = probable.rollDie(3);
     for (let i = 0; i < numberOfLevels; ++i) {
-      levelSpecs.push(generateExtremes().join(';'));
+      levelSpecs.push(generateInflections().join(';'));
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
@@ -28,16 +28,18 @@ function followRoute(routeDict) {
   }
 }
 
-function generateExtremes() {
-  var numberOfExtremes = 3 + probable.roll(3);
-  var extremes = [];
-  var direction = probable.roll(2) === 0 ? -1 : 1;
+function generateInflections() {
+  var numberOfInflections = 3 + probable.roll(3);
+  var inflections = [];
+  // var direction = probable.roll(2) === 0 ? -1 : 1;
   var previousY = 0;
   var xPositions = [];
   const minY = 10;
-  const xSegmentSize = 100/(numberOfExtremes - 1);
+  const maxYSeparation = 30;
+  const minYSeparation = 10;
+  const xSegmentSize = 100 / (numberOfInflections - 1);
 
-  for (let k = 1; k < numberOfExtremes - 1; ++k) {
+  for (let k = 1; k < numberOfInflections - 1; ++k) {
     let jitter = probable.roll(11) - 5;
     xPositions.push(~~(k * xSegmentSize) + jitter);
   }
@@ -45,21 +47,26 @@ function generateExtremes() {
   xPositions.unshift(0);
   xPositions.push(100);
 
-  for (let j = 0; j < numberOfExtremes; ++j) {
+  for (let j = 0; j < numberOfInflections; ++j) {
     let y = probable.roll(100 - minY) + minY;
 
-    if (direction > 0) {
-      y = previousY + probable.roll(100 - previousY);
+    // if (direction > 0) {
+    //   y = previousY + probable.roll(100 - previousY);
+    // }
+    // else {
+    let delta = minYSeparation + probable.roll(maxYSeparation - minYSeparation);
+    delta *= probable.roll(2) === 0 ? -1 : 1;
+    y = previousY + delta;
+    if (y < 0) {
+      y = previousY - delta;
     }
-    else {
-      y = probable.roll(previousY - minY) + minY;
-    }
+    // }
     previousY = y;
-    direction *= -1;
+    // direction *= -1;
 
-    extremes.push(`${xPositions[j]},${y}`);
+    inflections.push(`${xPositions[j]},${y}`);
   }
-  return extremes;
+  return inflections;
 }
 
 function parseLevelSpec(spec) {
