@@ -1,4 +1,6 @@
 var d3 = require('d3-selection');
+require('d3-transition');
+var ease = require('d3-ease');
 var hillRoot = d3.select('.hills');
 var board = d3.select('.board');
 
@@ -7,7 +9,11 @@ const hillBottom = '\nL100,100 L0,100Z';
 // This module assumes: viewBox="0 0 100 100"
 // levelSpecs is an array in which each member is a levelSpec.
 // A levelSpec is an array containing peak coords (each of which are 2-element arrays).
-function renderHills({ levelSpecs = [['green', [50, 100]]] }) {
+function renderHills({
+  levelSpecs = [['green', [50, 100]]],
+  debug,
+  animatePairs
+}) {
   console.log(levelSpecs);
   var width = +window.innerWidth;
   var height = +window.innerHeight;
@@ -15,26 +21,50 @@ function renderHills({ levelSpecs = [['green', [50, 100]]] }) {
   board.attr('width', width);
   board.attr('height', height);
 
-  levelSpecs.forEach(renderHillLevel);
-}
+  if (animatePairs && levelSpecs.length === 2) {
+    let hillPath = renderHillLevel(levelSpecs[0], 0);
+    renderHillTransition(levelSpecs[1], hillPath);
+  } else {
+    levelSpecs.forEach(renderHillLevel);
+  }
 
-function renderHillLevel(levelSpec, level) {
-  var color = levelSpec[0];
-  var extremeCoords = levelSpec.slice(1);
-  var bezierCurves = curvesFromExtremes(extremeCoords);
-  renderCurvePoints(bezierCurves);
-  console.log('bezierCurves', bezierCurves);
+  function renderHillLevel(levelSpec, level) {
+    var color = levelSpec[0];
+    var extremeCoords = levelSpec.slice(1);
+    var bezierCurves = curvesFromExtremes(extremeCoords);
+    if (debug) {
+      renderCurvePoints(bezierCurves);
+      console.log('bezierCurves', bezierCurves);
+    }
 
-  var path = `M ${extremeCoords[0].join(',')} `;
-  path += bezierCurves.map(pathStringForCurve).join('\n');
-  path += hillBottom;
+    var path = `M ${extremeCoords[0].join(',')} `;
+    path += bezierCurves.map(pathStringForCurve).join('\n');
+    path += hillBottom;
 
-  console.log('path', path);
-  hillRoot
-    .append('path')
-    .attr('d', path)
-    .attr('transform', `translate(0, ${level * 20})`)
-    .attr('fill', color);
+    if (debug) {
+      console.log('path', path);
+    }
+    return hillRoot
+      .append('path')
+      .attr('d', path)
+      .attr('transform', `translate(0, ${level * 20})`)
+      .attr('fill', color);
+  }
+
+  function renderHillTransition(transitionSpec, hillPath) {
+    var transitionBezierCurves = curvesFromExtremes(transitionSpec.slice(1));
+    var color = transitionSpec[0];
+    var extremeCoords = transitionSpec.slice(1);
+    var transitionPath = `M ${extremeCoords[0].join(',')} `;
+    transitionPath += transitionBezierCurves.map(pathStringForCurve).join('\n');
+    transitionPath += hillBottom;
+    hillPath
+      .transition()
+      .duration(1000)
+      .ease(ease.easeLinear)
+      .attr('d', transitionPath)
+      .attr('fill', color);
+  }
 }
 
 function pathStringForCurve(curve) {

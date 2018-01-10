@@ -3,6 +3,30 @@ var handleError = require('handle-error-web');
 var renderHills = require('./dom/render-hills');
 var probable = require('probable');
 
+var hillColors = [
+  '#66b04b',
+  '#267129',
+  '#7cb420',
+  'rgb(255, 0, 154)',
+  'rgb(255, 0, 111)',
+  'rgb(255, 7, 69)',
+  'rgb(255, 69, 16)',
+  'rgb(255, 101, 0)',
+  'rgb(226, 124, 0)',
+  'rgb(191, 143, 0)',
+  'rgb(152, 157, 0)',
+  'rgb(106, 167, 0)',
+  'rgb(24, 174, 0)',
+  'rgb(0, 179, 10)',
+  'rgb(0, 183, 77)',
+  'rgb(0, 185, 124)',
+  'rgb(0, 187, 170)',
+  'rgb(143, 121, 255)',
+  'rgb(213, 92, 255)',
+  'rgb(255, 52, 240)',
+  'rgb(255, 0, 198'
+];
+
 var routeState = RouteState({
   followRoute: followRoute,
   windowObject: window
@@ -18,26 +42,29 @@ function followRoute(routeDict) {
     let levelSpecs = [];
     let numberOfLevels = probable.rollDie(3);
     for (let i = 0; i < numberOfLevels; ++i) {
-      levelSpecs.push(generateLevelSpec());
+      levelSpecs.push(generateLevelSpec(i));
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
     renderHills({
-      levelSpecs: routeDict.levelSpecs.split('|').map(parseLevelSpec)
+      levelSpecs: routeDict.levelSpecs.split('|').map(parseLevelSpec),
+      debug: routeDict.debug,
+      animatePairs: routeDict.animatePairs
     });
   }
 }
 
 // A level spec is an array. The first element is the color. The rest
 // are the extremes in the hills.
-function generateLevelSpec() {
-  var spec = `${pickHillColor()};`;
+function generateLevelSpec(order) {
+  var colors = probable.shuffle(hillColors);
+  var spec = `${pickHillColor(order)};`;
   spec += generateInflections().join(';');
   return spec;
-}
 
-function pickHillColor() {
-  return probable.pickFromArray(['#66b04b', '#267129', '#7cb420']);
+  function pickHillColor(i) {
+    return colors[i];
+  }
 }
 
 function generateInflections() {
