@@ -1,5 +1,5 @@
 var d3 = require('d3-selection');
-var outline = d3.select('.hill-outline');
+var hillRoot = d3.select('.hills');
 var board = d3.select('.board');
 
 const hillBottom = '\nL100,100 L0,100Z';
@@ -30,7 +30,7 @@ function renderHillLevel(levelSpec, level) {
   path += hillBottom;
 
   console.log('path', path);
-  outline
+  hillRoot
     .append('path')
     .attr('d', path)
     .attr('transform', `translate(0, ${level * 20})`)
@@ -44,7 +44,7 @@ function pathStringForCurve(curve) {
 }
 
 function renderCurvePoints(curves) {
-  var circles = outline
+  var circles = hillRoot
     .selectAll('.curve-dest')
     .data(curves.map(curve => curve.dest));
   circles
@@ -56,7 +56,7 @@ function renderCurvePoints(curves) {
     .attr('cx', point => point[0])
     .attr('cy', point => point[1]);
 
-  var controlCircles = outline
+  var controlCircles = hillRoot
     .selectAll('.curve-control')
     .data(
       curves

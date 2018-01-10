@@ -37,7 +37,7 @@ function generateLevelSpec() {
 }
 
 function pickHillColor() {
-  return probable.pickFromArray(['green', 'darkgreen', 'yellow']);
+  return probable.pickFromArray(['#66b04b', '#267129', '#7cb420']);
 }
 
 function generateInflections() {
