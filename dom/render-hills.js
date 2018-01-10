@@ -2,10 +2,12 @@ var d3 = require('d3-selection');
 var outline = d3.select('.hill-outline');
 var board = d3.select('.board');
 
+const hillBottom = '\nL100,100 L0,100Z';
+
 // This module assumes: viewBox="0 0 100 100"
 // levelSpecs is an array in which each member is a levelSpec.
 // A levelSpec is an array containing peak coords (each of which are 2-element arrays).
-function renderHills({ levelSpecs = [[[50, 100]]] }) {
+function renderHills({ levelSpecs = [['green', [50, 100]]] }) {
   console.log(levelSpecs);
   var width = +window.innerWidth;
   var height = +window.innerHeight;
@@ -16,19 +18,23 @@ function renderHills({ levelSpecs = [[[50, 100]]] }) {
   levelSpecs.forEach(renderHillLevel);
 }
 
-function renderHillLevel(extremeCoords, level) {
+function renderHillLevel(levelSpec, level) {
+  var color = levelSpec[0];
+  var extremeCoords = levelSpec.slice(1);
   var bezierCurves = curvesFromExtremes(extremeCoords);
   renderCurvePoints(bezierCurves);
   console.log('bezierCurves', bezierCurves);
 
   var path = `M ${extremeCoords[0].join(',')} `;
   path += bezierCurves.map(pathStringForCurve).join('\n');
+  path += hillBottom;
 
   console.log('path', path);
   outline
     .append('path')
     .attr('d', path)
-    .attr('transform', `translate(0, ${level * 20})`);
+    .attr('transform', `translate(0, ${level * 20})`)
+    .attr('fill', color);
 }
 
 function pathStringForCurve(curve) {

@@ -18,7 +18,7 @@ function followRoute(routeDict) {
     let levelSpecs = [];
     let numberOfLevels = probable.rollDie(3);
     for (let i = 0; i < numberOfLevels; ++i) {
-      levelSpecs.push(generateInflections().join(';'));
+      levelSpecs.push(generateLevelSpec());
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
@@ -28,10 +28,21 @@ function followRoute(routeDict) {
   }
 }
 
+// A level spec is an array. The first element is the color. The rest
+// are the extremes in the hills.
+function generateLevelSpec() {
+  var spec = `${pickHillColor()};`;
+  spec += generateInflections().join(';');
+  return spec;
+}
+
+function pickHillColor() {
+  return probable.pickFromArray(['green', 'darkgreen', 'yellow']);
+}
+
 function generateInflections() {
   var numberOfInflections = 3 + probable.roll(3);
   var inflections = [];
-  // var direction = probable.roll(2) === 0 ? -1 : 1;
   var previousY = 0;
   var xPositions = [];
   const minY = 10;
@@ -50,19 +61,13 @@ function generateInflections() {
   for (let j = 0; j < numberOfInflections; ++j) {
     let y = probable.roll(100 - minY) + minY;
 
-    // if (direction > 0) {
-    //   y = previousY + probable.roll(100 - previousY);
-    // }
-    // else {
     let delta = minYSeparation + probable.roll(maxYSeparation - minYSeparation);
     delta *= probable.roll(2) === 0 ? -1 : 1;
     y = previousY + delta;
     if (y < 0) {
       y = previousY - delta;
     }
-    // }
     previousY = y;
-    // direction *= -1;
 
     inflections.push(`${xPositions[j]},${y}`);
   }
@@ -70,7 +75,8 @@ function generateInflections() {
 }
 
 function parseLevelSpec(spec) {
-  return spec.split(';').map(parseCoords);
+  var parts = spec.split(';');
+  return [parts[0]].concat(parts.slice(1).map(parseCoords));
 }
 
 function parseCoords(coords) {
