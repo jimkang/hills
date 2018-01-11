@@ -1,6 +1,7 @@
 body {
   font-family: 'Helvetica Neue';
   background-color: black;
+  margin: 0;
 }
 
 .hidden {

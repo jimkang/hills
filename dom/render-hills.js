@@ -4,8 +4,6 @@ var ease = require('d3-ease');
 var hillRoot = d3.select('.hills');
 var board = d3.select('.board');
 
-const hillBottom = '\nL100,100 L0,100Z';
-
 // This module assumes: viewBox="0 0 100 100"
 // levelSpecs is an array in which each member is a levelSpec.
 // A levelSpec is an array containing peak coords (each of which are 2-element arrays).
@@ -18,8 +16,14 @@ function renderHills({
   var width = +window.innerWidth;
   var height = +window.innerHeight;
 
+  if (width < height) {
+    // Avoid a vertical rectangle aspect ratio.
+    height = width;
+  }
+
   board.attr('width', width);
   board.attr('height', height);
+  board.attr('viewBox', `0 0 ${width} ${height}`);
 
   if (animatePairs && levelSpecs.length === 2) {
     let hillPath = renderHillLevel(levelSpecs[0], 0);
@@ -30,7 +34,7 @@ function renderHills({
 
   function renderHillLevel(levelSpec, level) {
     var color = levelSpec[0];
-    var extremeCoords = levelSpec.slice(1);
+    var extremeCoords = levelSpec.slice(1).map(scaleToViewBox);
     var bezierCurves = curvesFromExtremes(extremeCoords);
     if (debug) {
       renderCurvePoints(bezierCurves);
@@ -39,7 +43,7 @@ function renderHills({
 
     var path = `M ${extremeCoords[0].join(',')} `;
     path += bezierCurves.map(pathStringForCurve).join('\n');
-    path += hillBottom;
+    path += `\nL${width},${height} L0,${width}Z`;
 
     if (debug) {
       console.log('path', path);
@@ -54,16 +58,23 @@ function renderHills({
   function renderHillTransition(transitionSpec, hillPath) {
     var transitionBezierCurves = curvesFromExtremes(transitionSpec.slice(1));
     var color = transitionSpec[0];
-    var extremeCoords = transitionSpec.slice(1);
+    var extremeCoords = transitionSpec.slice(1).map(scaleToViewBox);
     var transitionPath = `M ${extremeCoords[0].join(',')} `;
     transitionPath += transitionBezierCurves.map(pathStringForCurve).join('\n');
-    transitionPath += hillBottom;
+    transitionPath += `\nL${width},${height} L0,${width}Z`;
     hillPath
       .transition()
       .duration(1000)
       .ease(ease.easeLinear)
       .attr('d', transitionPath)
       .attr('fill', color);
+  }
+
+  function scaleToViewBox(coordsScaledTo100) {
+    return [
+      coordsScaledTo100[0] / 100 * width,
+      coordsScaledTo100[1] / 100 * height
+    ];
   }
 }
 
