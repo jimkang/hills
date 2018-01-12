@@ -19,7 +19,7 @@
   "homepage": "https://github.com/jimkang/hills",
   "devDependencies": {
     "browserify": "^14.5.0",
-    "uglify-es": "^3.1.9"
+    "uglify-es": "^3.3.5"
   },
   "dependencies": {
     "basic-browser-request": "^8.0.0",
