@@ -1,5 +1,5 @@
 body {
-  font-family: 'Helvetica Neue';
+  font-family: futura, 'Helvetica Neue';
   background-color: black;
   margin: 0;
 }
@@ -36,4 +36,19 @@ body {
 
 .board {
   margin-top: 1em;
+}
+
+#roll-hills-button {
+  font-family: futura;
+  font-size: 1.2em;
+  color: #ddd;
+  text-transform: uppercase;
+  background-color: transparent;
+  border: 1px solid #ddd;
+  border-radius: 1em;
+  padding: 0.2em;
+  margin-top: 1em;
+  margin-bottom: 2em;
+  width: 100%;
+  cursor: pointer;
 }

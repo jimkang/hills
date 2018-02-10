@@ -12,7 +12,7 @@ function renderHills({
   debug,
   animatePairs
 }) {
-  console.log(levelSpecs);
+  // console.log(levelSpecs);
   var width = +window.innerWidth;
   var height = +window.innerHeight;
 
@@ -24,6 +24,8 @@ function renderHills({
   board.attr('width', width);
   board.attr('height', height);
   board.attr('viewBox', `0 0 ${width} ${height}`);
+
+  hillRoot.selectAll('*').remove();
 
   if (animatePairs && levelSpecs.length === 2) {
     let hillPath = renderHillLevel(levelSpecs[0], 0);
@@ -51,7 +53,10 @@ function renderHills({
     return hillRoot
       .append('path')
       .attr('d', path)
-      .attr('transform', `translate(0, ${level * 20})`)
+      .attr(
+        'transform',
+        `translate(0, ${(level + 1) * ~~(100 / levelSpecs.length)})`
+      )
       .attr('fill', color);
   }
 

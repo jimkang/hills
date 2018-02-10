@@ -1,6 +1,7 @@
 var RouteState = require('route-state');
 var handleError = require('handle-error-web');
 var renderHills = require('./dom/render-hills');
+var renderControls = require('./dom/render-controls');
 var probable = require('probable');
 
 var hillColors = [
@@ -27,6 +28,17 @@ var hillColors = [
   'rgb(255, 0, 198'
 ];
 
+var maxNumberOfLevelsTable = probable.createTableFromSizes([
+  [5, 3],
+  [3, 10],
+  [2, 20]
+]);
+
+var numberOfInflectionsFnTable = probable.createTableFromSizes([
+  [4, () => 3 + probable.roll(3)],
+  [1, () => 5 + probable.roll(3)]
+]);
+
 var routeState = RouteState({
   followRoute: followRoute,
   windowObject: window
@@ -40,7 +52,7 @@ var routeState = RouteState({
 function followRoute(routeDict) {
   if (!routeDict.levelSpecs) {
     let levelSpecs = [];
-    let numberOfLevels = probable.rollDie(3);
+    let numberOfLevels = probable.rollDie(maxNumberOfLevelsTable.roll());
     for (let i = 0; i < numberOfLevels; ++i) {
       levelSpecs.push(generateLevelSpec(i));
     }
@@ -52,6 +64,11 @@ function followRoute(routeDict) {
       animatePairs: routeDict.animatePairs
     });
   }
+  renderControls({ onRoll });
+}
+
+function onRoll() {
+  routeState.overwriteRouteEntirely({});
 }
 
 // A level spec is an array. The first element is the color. The rest
@@ -68,7 +85,7 @@ function generateLevelSpec(order) {
 }
 
 function generateInflections() {
-  var numberOfInflections = 3 + probable.roll(3);
+  var numberOfInflections = numberOfInflectionsFnTable.roll()();
   var inflections = [];
   var previousY = 0;
   var xPositions = [];
