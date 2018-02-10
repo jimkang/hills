@@ -29,13 +29,13 @@ var hillColors = [
 ];
 
 var maxNumberOfLevelsTable = probable.createTableFromSizes([
-  [5, 3],
+  [6, 3],
   [3, 10],
-  [2, 20]
+  [1, 20]
 ]);
 
 var numberOfInflectionsFnTable = probable.createTableFromSizes([
-  [4, () => 3 + probable.roll(3)],
+  [7, () => 3 + probable.roll(3)],
   [1, () => 5 + probable.roll(3)]
 ]);
 
