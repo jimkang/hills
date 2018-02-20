@@ -5,6 +5,9 @@ var renderControls = require('./dom/render-controls');
 var probable = require('probable');
 
 const maxJitter = 5;
+const minAdjacentColorIndexDist = 2;
+const maxColorPickTries = 5;
+const minNumberOfColorsBeforeRepeating = 5;
 
 var hillColors = [
   '#66b04b',
@@ -54,9 +57,12 @@ var routeState = RouteState({
 function followRoute(routeDict) {
   if (!routeDict.levelSpecs) {
     let levelSpecs = [];
+    let previousColorIndexes = [];
     let numberOfLevels = probable.rollDie(maxNumberOfLevelsTable.roll());
     for (let i = 0; i < numberOfLevels; ++i) {
-      levelSpecs.push(generateLevelSpec(i));
+      let colorIndex = pickColor(previousColorIndexes);
+      previousColorIndexes.push(colorIndex);
+      levelSpecs.push(generateLevelSpec(hillColors[colorIndex]));
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
@@ -73,17 +79,39 @@ function onRoll() {
   routeState.overwriteRouteEntirely({});
 }
 
+// Will modify chosenColorIndexes after it has chose a color.
+// Assumes that adjacent indexes in hillColors are very similar.
+function pickColor(previousIndexes) {
+  var lastColorIndex;
+  if (previousIndexes.length > 0) {
+    lastColorIndex = previousIndexes[previousIndexes.length - 1];
+  }
+  var colorIndex;
+  for (let j = 0; ; ++j) {
+    colorIndex = probable.roll(hillColors.length);
+
+    if (j > maxColorPickTries) {
+      // Just pick anything even if it might be too close to an existing color.
+      console.log('Giving up after picking a new color after', j, 'tries.');
+      break;
+    }
+    if (isNaN(lastColorIndex)) {
+      break;
+    } else if (
+      Math.abs(colorIndex - lastColorIndex) >= minAdjacentColorIndexDist &&
+      previousIndexes.slice(-1 * minNumberOfColorsBeforeRepeating).indexOf(colorIndex) === -1
+    ) {
+      // This one is far enough away and has not been chosen before.
+      break;
+    }
+  }
+  return colorIndex;
+}
+
 // A level spec is an array. The first element is the color. The rest
 // are the extremes in the hills.
-function generateLevelSpec(order) {
-  var colors = probable.shuffle(hillColors);
-  var spec = `${pickHillColor(order)};`;
-  spec += generateInflections().join(';');
-  return spec;
-
-  function pickHillColor(i) {
-    return colors[i];
-  }
+function generateLevelSpec(color) {
+  return `${color};${generateInflections().join(';')}`;
 }
 
 function generateInflections() {
