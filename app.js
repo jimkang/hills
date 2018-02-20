@@ -4,6 +4,8 @@ var renderHills = require('./dom/render-hills');
 var renderControls = require('./dom/render-controls');
 var probable = require('probable');
 
+const maxJitter = 5;
+
 var hillColors = [
   '#66b04b',
   '#267129',
@@ -95,7 +97,7 @@ function generateInflections() {
   const xSegmentSize = 100 / (numberOfInflections - 1);
 
   for (let k = 1; k < numberOfInflections - 1; ++k) {
-    let jitter = probable.roll(11) - 5;
+    let jitter = probable.roll(maxJitter - (numberOfInflections - 3)) + 1;
     xPositions.push(~~(k * xSegmentSize) + jitter);
   }
   // xPositions.sort();
