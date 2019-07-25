@@ -24,6 +24,11 @@ body {
   stroke: none;
 }
 
+path.debug {
+  stroke: white;
+  stroke-width: 10px;
+}
+
 .curve-dest {
   fill: red;
   stroke: none;

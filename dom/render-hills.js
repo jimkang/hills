@@ -51,7 +51,7 @@ function renderHills({
     if (debug) {
       console.log('path', path);
     }
-    return hillRoot
+    var hillPaths = hillRoot
       .append('path')
       .attr('d', path)
       .attr(
@@ -59,6 +59,11 @@ function renderHills({
         `translate(0, ${(level + 1) * ~~(100 / levelSpecs.length)})`
       )
       .attr('fill', color);
+
+    if (debug) {
+      hillPaths.classed('debug', true);
+    }
+    return hillPaths;
   }
 
   function renderHillTransition(transitionSpec, hillPath) {
@@ -78,10 +83,14 @@ function renderHills({
 
   function scaleToViewBox(coordsScaledTo100) {
     return [
-      (coordsScaledTo100[0] / 100) * width,
-      (coordsScaledTo100[1] / 100) * height
+      roundToTwo((coordsScaledTo100[0] / 100) * width),
+      roundToTwo((coordsScaledTo100[1] / 100) * height)
     ];
   }
+}
+
+function roundToTwo(n) {
+  return +n.toFixed(2);
 }
 
 function pathStringForCurve(curve) {
@@ -133,8 +142,8 @@ function curvesFromExtremes(extremes) {
     let xDistToPrev = dest[0] - src[0];
 
     curves.push({
-      srcCtrlPt: [src[0] + xDistToPrev / 2, src[1]],
-      destCtrlPt: [dest[0] - xDistToPrev / 2, dest[1]],
+      srcCtrlPt: [roundToTwo(src[0] + xDistToPrev / 2), src[1]],
+      destCtrlPt: [roundToTwo(dest[0] - xDistToPrev / 2), dest[1]],
       dest
     });
   }
