@@ -102,18 +102,18 @@ function pathStringForCurve(curve) {
 
 function renderCurvePoints(root, curves, rootTranslate) {
   root.attr('transform', rootTranslate);
-  renderDots(root, curves.map(curve => curve.dest), 'curve-dest', 10);
+  renderDots(root, curves.map(curve => curve.dest), 'curve-dest', 20);
   renderDots(
     root,
     curves.map(curve => curve.srcCtrlPt),
     'curve-start-control',
-    5
+    10
   );
   renderDots(
     root,
     curves.map(curve => curve.destCtrlPt),
     'curve-end-control',
-    5
+    10
   );
 }
 
