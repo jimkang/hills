@@ -30,12 +30,17 @@ path.debug {
 }
 
 .curve-dest {
+  fill: #0c7;
+  stroke: white;
+}
+
+.curve-start-control {
   fill: red;
   stroke: none;
 }
 
-.curve-control {
-  fill: white;
+.curve-end-control {
+  fill: #ef0;
   stroke: none;
 }
 

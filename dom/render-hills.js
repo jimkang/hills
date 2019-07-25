@@ -39,8 +39,12 @@ function renderHills({
     var color = levelSpec[0];
     var extremeCoords = levelSpec.slice(1).map(scaleToViewBox);
     var bezierCurves = curvesFromExtremes(extremeCoords);
+
+    const rootTranslate = `translate(0, ${(level + 1) *
+      ~~(100 / levelSpecs.length)})`;
+
     if (debug) {
-      renderCurvePoints(debugLayer, bezierCurves);
+      renderCurvePoints(debugLayer, bezierCurves, rootTranslate);
       console.log('bezierCurves', bezierCurves);
     }
 
@@ -54,10 +58,7 @@ function renderHills({
     var hillPaths = hillRoot
       .append('path')
       .attr('d', path)
-      .attr(
-        'transform',
-        `translate(0, ${(level + 1) * ~~(100 / levelSpecs.length)})`
-      )
+      .attr('transform', rootTranslate)
       .attr('fill', color);
 
     if (debug) {
@@ -99,36 +100,34 @@ function pathStringForCurve(curve) {
   ${curve.dest.join(',')}`;
 }
 
-function renderCurvePoints(root, curves) {
-  var circles = root
-    .selectAll('.curve-dest')
-    .data(curves.map(curve => curve.dest));
+function renderCurvePoints(root, curves, rootTranslate) {
+  root.attr('transform', rootTranslate);
+  renderDots(root, curves.map(curve => curve.dest), 'curve-dest', 10);
+  renderDots(
+    root,
+    curves.map(curve => curve.srcCtrlPt),
+    'curve-start-control',
+    5
+  );
+  renderDots(
+    root,
+    curves.map(curve => curve.destCtrlPt),
+    'curve-end-control',
+    5
+  );
+}
 
-  circles.exit().remove();
+function renderDots(root, data, className, r) {
+  var dots = root.selectAll('.' + className).data(data);
 
-  circles
+  dots.exit().remove();
+
+  dots
     .enter()
     .append('circle')
-    .attr('r', 5)
-    .classed('curve-dest', true)
-    .merge(circles)
-    .attr('cx', point => point[0])
-    .attr('cy', point => point[1]);
-
-  var controlCircles = root
-    .selectAll('.curve-control')
-    .data(
-      curves
-        .map(curve => curve.srcCtrlPt)
-        .concat(curves.map(curve => curve.destCtrlPt))
-    );
-  controlCircles.exit().remove();
-  controlCircles
-    .enter()
-    .append('circle')
-    .attr('r', 2)
-    .classed('curve-control', true)
-    .merge(controlCircles)
+    .attr('r', r)
+    .classed(className, true)
+    .merge(dots)
     .attr('cx', point => point[0])
     .attr('cy', point => point[1]);
 }
