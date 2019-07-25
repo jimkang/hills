@@ -24,12 +24,12 @@ body {
   stroke: none;
 }
 
-.hills .curve-dest {
+.curve-dest {
   fill: red;
   stroke: none;
 }
 
-.hill .curve-control {
+.curve-control {
   fill: white;
   stroke: none;
 }

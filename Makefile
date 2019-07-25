@@ -1,6 +1,6 @@
 BROWSERIFY = ./node_modules/.bin/browserify
-#UGLIFY = ./node_modules/uglify-es/bin/uglifyjs
-UGLIFY = ./node_modules/.bin/uglifyjs
+UGLIFY = ./node_modules/uglify-es/bin/uglifyjs
+#UGLIFY = ./node_modules/.bin/uglifyjs
 TRANSFORM_SWITCH = -t [ babelify --presets [ es2015 ] ]
 
 run:

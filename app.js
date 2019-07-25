@@ -45,7 +45,7 @@ var numberOfInflectionsFnTable = probable.createTableFromSizes([
 ]);
 
 var routeState = RouteState({
-  followRoute: followRoute,
+  followRoute,
   windowObject: window
 });
 
@@ -76,7 +76,7 @@ function followRoute(routeDict) {
 }
 
 function onRoll() {
-  routeState.overwriteRouteEntirely({});
+  routeState.removeFromRoute('levelSpecs');
 }
 
 // Will modify chosenColorIndexes after it has chose a color.
@@ -99,7 +99,9 @@ function pickColor(previousIndexes) {
       break;
     } else if (
       Math.abs(colorIndex - lastColorIndex) >= minAdjacentColorIndexDist &&
-      previousIndexes.slice(-1 * minNumberOfColorsBeforeRepeating).indexOf(colorIndex) === -1
+      previousIndexes
+        .slice(-1 * minNumberOfColorsBeforeRepeating)
+        .indexOf(colorIndex) === -1
     ) {
       // This one is far enough away and has not been chosen before.
       break;

@@ -2,6 +2,7 @@ var d3 = require('d3-selection');
 require('d3-transition');
 var ease = require('d3-ease');
 var hillRoot = d3.select('.hills');
+var debugLayer = d3.select('#debug-layer');
 var board = d3.select('.board');
 
 // This module assumes: viewBox="0 0 100 100"
@@ -39,7 +40,7 @@ function renderHills({
     var extremeCoords = levelSpec.slice(1).map(scaleToViewBox);
     var bezierCurves = curvesFromExtremes(extremeCoords);
     if (debug) {
-      renderCurvePoints(bezierCurves);
+      renderCurvePoints(debugLayer, bezierCurves);
       console.log('bezierCurves', bezierCurves);
     }
 
@@ -77,8 +78,8 @@ function renderHills({
 
   function scaleToViewBox(coordsScaledTo100) {
     return [
-      coordsScaledTo100[0] / 100 * width,
-      coordsScaledTo100[1] / 100 * height
+      (coordsScaledTo100[0] / 100) * width,
+      (coordsScaledTo100[1] / 100) * height
     ];
   }
 }
@@ -89,30 +90,34 @@ function pathStringForCurve(curve) {
   ${curve.dest.join(',')}`;
 }
 
-function renderCurvePoints(curves) {
-  var circles = hillRoot
+function renderCurvePoints(root, curves) {
+  var circles = root
     .selectAll('.curve-dest')
     .data(curves.map(curve => curve.dest));
+
+  circles.exit().remove();
+
   circles
     .enter()
     .append('circle')
-    .attr('r', 2)
+    .attr('r', 5)
     .classed('curve-dest', true)
     .merge(circles)
     .attr('cx', point => point[0])
     .attr('cy', point => point[1]);
 
-  var controlCircles = hillRoot
+  var controlCircles = root
     .selectAll('.curve-control')
     .data(
       curves
         .map(curve => curve.srcCtrlPt)
         .concat(curves.map(curve => curve.destCtrlPt))
     );
+  controlCircles.exit().remove();
   controlCircles
     .enter()
     .append('circle')
-    .attr('r', 1)
+    .attr('r', 2)
     .classed('curve-control', true)
     .merge(controlCircles)
     .attr('cx', point => point[0])
