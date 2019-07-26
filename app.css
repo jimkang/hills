@@ -42,15 +42,27 @@ path.debug {
 }
 
 .curve-start-control {
-  fill: red;
+  fill: #0670dc;
   stroke: white;
   stroke-width: 4;
 }
 
 .curve-end-control {
-  fill: blue;
+  fill: #ef0e50;
   stroke: white;
   stroke-width: 4;
+}
+
+#debug-layer line {
+  stroke-width: 8;
+}
+
+#debug-layer .curve-start-control-line {
+  stroke: hsla(0, 0%, 100%, 0.5);
+}
+
+#debug-layer .curve-end-control-line {
+  stroke: hsla(0, 0%, 0%, 0.5);
 }
 
 .board {

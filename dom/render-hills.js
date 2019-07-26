@@ -102,6 +102,16 @@ function pathStringForCurve(curve) {
 
 function renderCurvePoints(root, curves, rootTranslate) {
   root.attr('transform', rootTranslate);
+  renderLines(
+    root,
+    curves.map(curve => [curve.src, curve.srcCtrlPt]),
+    'curve-start-control-line'
+  );
+  renderLines(
+    root,
+    curves.map(curve => [curve.destCtrlPt, curve.dest]),
+    'curve-end-control-line'
+  );
   renderDots(root, curves.map(curve => curve.src), 'curve-src', 50);
   renderDots(root, curves.map(curve => curve.dest), 'curve-dest', 40);
   renderDots(
@@ -131,6 +141,22 @@ function renderDots(root, data, className, r) {
     .merge(dots)
     .attr('cx', point => point[0])
     .attr('cy', point => point[1]);
+}
+
+function renderLines(root, data, className) {
+  var lines = root.selectAll('.' + className).data(data);
+
+  lines.exit().remove();
+
+  lines
+    .enter()
+    .append('line')
+    .classed(className, true)
+    .merge(lines)
+    .attr('x1', points => points[0][0])
+    .attr('y1', points => points[0][1])
+    .attr('x2', points => points[1][0])
+    .attr('y2', points => points[1][1]);
 }
 
 // Assumes extremes are sorted by x values, ascending.
