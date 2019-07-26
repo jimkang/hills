@@ -11,7 +11,8 @@ var board = d3.select('.board');
 function renderHills({
   levelSpecs = [['green', [50, 100]]],
   debug,
-  animatePairs
+  animatePairs,
+  extraCtrlPtSeparation
 }) {
   // console.log(levelSpecs);
   var width = +window.innerWidth;
@@ -39,7 +40,7 @@ function renderHills({
   function renderHillLevel(levelSpec, level) {
     var color = levelSpec[0];
     var extremeCoords = levelSpec.slice(1).map(scaleToViewBox);
-    var bezierCurves = curvesFromExtremes(extremeCoords);
+    var bezierCurves = curvesFromExtremes(extremeCoords, extraCtrlPtSeparation);
 
     const rootTranslate = `translate(0, ${(level + 1) *
       ~~(100 / levelSpecs.length)})`;
@@ -159,19 +160,26 @@ function renderLines(root, data, className) {
 }
 
 // Assumes extremes are sorted by x values, ascending.
-function curvesFromExtremes(extremes) {
+function curvesFromExtremes(extremes, extraCtrlPtSeparation = false) {
   var curves = [];
   for (var i = 1; i < extremes.length; ++i) {
     let dest = extremes[i];
     let src = extremes[i - 1];
     let xDistToPrev = dest[0] - src[0];
 
-    curves.push({
+    let curve = {
       src,
       srcCtrlPt: [roundToTwo(src[0] + xDistToPrev / 2), src[1]],
       destCtrlPt: [roundToTwo(dest[0] - xDistToPrev / 2), dest[1]],
       dest
-    });
+    };
+    if (extraCtrlPtSeparation) {
+      const yDelta = curve.destCtrlPt[1] - curve.srcCtrlPt[1];
+      const deltaPortion = yDelta / 2;
+      curve.destCtrlPt[1] += deltaPortion;
+      curve.srcCtrlPt[1] -= deltaPortion;
+    }
+    curves.push(curve);
   }
   return curves;
 }

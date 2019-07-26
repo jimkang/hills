@@ -69,7 +69,8 @@ function followRoute(routeDict) {
     renderHills({
       levelSpecs: routeDict.levelSpecs.split('|').map(parseLevelSpec),
       debug: routeDict.debug,
-      animatePairs: routeDict.animatePairs
+      animatePairs: routeDict.animatePairs,
+      extraCtrlPtSeparation: routeDict.extraCtrlPtSeparation
     });
   }
   renderControls({ onRoll });
