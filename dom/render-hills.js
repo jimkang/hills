@@ -12,7 +12,8 @@ function renderHills({
   levelSpecs = [['green', [50, 100]]],
   debug,
   animatePairs,
-  extraCtrlPtSeparation
+  extraCtrlPtSeparation,
+  showHillLines
 }) {
   // console.log(levelSpecs);
   var width = +window.innerWidth;
@@ -63,8 +64,8 @@ function renderHills({
       .attr('transform', rootTranslate)
       .attr('fill', color);
 
-    if (debug) {
-      hillPaths.classed('debug', true);
+    if (debug || showHillLines) {
+      hillPaths.classed('outlined', true);
     }
     return hillPaths;
   }

@@ -24,9 +24,9 @@ body {
   stroke: none;
 }
 
-path.debug {
+path.outlined {
   stroke: white;
-  stroke-width: 10px;
+  stroke-width: 16px;
 }
 
 .curve-dest {

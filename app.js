@@ -3,6 +3,7 @@ var handleError = require('handle-error-web');
 var renderHills = require('./dom/render-hills');
 var renderControls = require('./dom/render-controls');
 var probable = require('probable');
+var hsl = require('d3-color').hsl;
 
 const maxJitter = 5;
 const minAdjacentColorIndexDist = 2;
@@ -55,14 +56,31 @@ var routeState = RouteState({
 })();
 
 function followRoute(routeDict) {
+  if (!routeDict.showHillLines) {
+    routeState.addToRoute({
+      showHillLines: probable.roll(5) == 0 ? 'yes' : 'no'
+    });
+    return;
+  }
+
   if (!routeDict.levelSpecs) {
+    if (!routeDict.fadeBackLayers) {
+      routeState.addToRoute({
+        fadeBackLayers: probable.roll(10) > 0 ? 'yes' : 'no'
+      });
+      return;
+    }
     let levelSpecs = [];
     let previousColorIndexes = [];
     let numberOfLevels = probable.rollDie(maxNumberOfLevelsTable.roll());
     for (let i = 0; i < numberOfLevels; ++i) {
       let colorIndex = pickColor(previousColorIndexes);
       previousColorIndexes.push(colorIndex);
-      levelSpecs.push(generateLevelSpec(hillColors[colorIndex]));
+      let fadeLevel = 0;
+      if (routeDict.fadeBackLayers === 'yes') {
+        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels;
+      }
+      levelSpecs.push(generateLevelSpec(fade(fadeLevel, hillColors[i])));
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
@@ -70,13 +88,16 @@ function followRoute(routeDict) {
       levelSpecs: routeDict.levelSpecs.split('|').map(parseLevelSpec),
       debug: routeDict.debug,
       animatePairs: routeDict.animatePairs,
-      extraCtrlPtSeparation: routeDict.extraCtrlPtSeparation
+      extraCtrlPtSeparation: routeDict.extraCtrlPtSeparation,
+      showHillLines: routeDict.showHillLines === 'yes'
     });
   }
   renderControls({ onRoll });
 }
 
 function onRoll() {
+  routeState.removeFromRoute('fadeBackLayers', false);
+  routeState.removeFromRoute('showHillLines', false);
   routeState.removeFromRoute('levelSpecs');
 }
 
@@ -166,6 +187,13 @@ function parseToNumber(n) {
 
 function reportTopLevelError(msg, url, lineNo, columnNo, error) {
   handleError(error);
+}
+
+function fade(level, clrString) {
+  var clr = hsl(clrString);
+  clr.s -= level;
+  clr.l -= level / 3;
+  return clr.toString();
 }
 
 // function aIsToTheLeftOfB(a, b) {
