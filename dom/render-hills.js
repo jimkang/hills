@@ -27,6 +27,7 @@ function renderHills({
   board.attr('viewBox', `0 0 ${width} ${height}`);
 
   hillRoot.selectAll('*').remove();
+  debugLayer.selectAll('*').remove();
 
   if (animatePairs && levelSpecs.length === 2) {
     let hillPath = renderHillLevel(levelSpecs[0], 0);
@@ -129,9 +130,7 @@ function renderCurvePoints(root, curves, rootTranslate) {
 }
 
 function renderDots(root, data, className, r) {
-  var dots = root.selectAll('.' + className).data(data);
-
-  dots.exit().remove();
+  var dots = root.selectAll('.' + className).data(data, getPointId);
 
   dots
     .enter()
@@ -144,9 +143,9 @@ function renderDots(root, data, className, r) {
 }
 
 function renderLines(root, data, className) {
-  var lines = root.selectAll('.' + className).data(data);
+  var lines = root.selectAll('.' + className).data(data, getLineId);
 
-  lines.exit().remove();
+  //lines.exit().remove();
 
   lines
     .enter()
@@ -175,6 +174,14 @@ function curvesFromExtremes(extremes) {
     });
   }
   return curves;
+}
+
+function getPointId(point) {
+  return `point_${point[0]}_${point[1]}`;
+}
+
+function getLineId(line) {
+  return `line_${line[0][0]}_${line[0][1]}_to_${line[1][0]}_${line[1][1]}`;
 }
 
 module.exports = renderHills;
