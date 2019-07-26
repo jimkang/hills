@@ -102,6 +102,7 @@ function pathStringForCurve(curve) {
 
 function renderCurvePoints(root, curves, rootTranslate) {
   root.attr('transform', rootTranslate);
+  renderDots(root, curves.map(curve => curve.src), 'curve-src', 50);
   renderDots(root, curves.map(curve => curve.dest), 'curve-dest', 40);
   renderDots(
     root,
@@ -141,6 +142,7 @@ function curvesFromExtremes(extremes) {
     let xDistToPrev = dest[0] - src[0];
 
     curves.push({
+      src,
       srcCtrlPt: [roundToTwo(src[0] + xDistToPrev / 2), src[1]],
       destCtrlPt: [roundToTwo(dest[0] - xDistToPrev / 2), dest[1]],
       dest
