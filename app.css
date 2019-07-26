@@ -32,16 +32,19 @@ path.debug {
 .curve-dest {
   fill: #0c7;
   stroke: white;
+  stroke-width: 4;
 }
 
 .curve-start-control {
   fill: red;
-  stroke: none;
+  stroke: white;
+  stroke-width: 4;
 }
 
 .curve-end-control {
-  fill: #ef0;
-  stroke: none;
+  fill: blue;
+  stroke: white;
+  stroke-width: 4;
 }
 
 .board {
