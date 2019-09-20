@@ -2,8 +2,9 @@ var RouteState = require('route-state');
 var handleError = require('handle-error-web');
 var renderHills = require('./dom/render-hills');
 var renderControls = require('./dom/render-controls');
-var probable = require('probable');
+var Probable = require('probable').createProbable;
 var hsl = require('d3-color').hsl;
+var seedrandom = require('seedrandom');
 
 const maxJitter = 5;
 const minAdjacentColorIndexDist = 2;
@@ -34,17 +35,6 @@ var hillColors = [
   'rgb(255, 0, 198'
 ];
 
-var maxNumberOfLevelsTable = probable.createTableFromSizes([
-  [6, 3],
-  [3, 10],
-  [1, 20]
-]);
-
-var numberOfInflectionsFnTable = probable.createTableFromSizes([
-  [7, () => 3 + probable.roll(3)],
-  [1, () => 5 + probable.roll(3)]
-]);
-
 var routeState = RouteState({
   followRoute,
   windowObject: window
@@ -62,12 +52,30 @@ function followRoute({
   debug,
   extraCtrlPtSeparation,
   tweenBetweenPairs,
-  tweenLengthMS = 5000
+  tweenLengthMS = 5000,
+  seed
 }) {
   if (isNaN(tweenLengthMS)) {
     tweenLengthMS = 5000;
   }
   const shouldTweenBetweenPairs = tweenBetweenPairs === 'yes';
+
+  if (!seed) {
+    routeState.addToRoute({ seed: new Date().toISOString() });
+  }
+
+  var probable = Probable({ random: seedrandom(seed) });
+
+  var maxNumberOfLevelsTable = probable.createTableFromSizes([
+    [6, 3],
+    [3, 10],
+    [1, 20]
+  ]);
+
+  var numberOfInflectionsFnTable = probable.createTableFromSizes([
+    [7, () => 3 + probable.roll(3)],
+    [1, () => 5 + probable.roll(3)]
+  ]);
 
   if (!showHillLines) {
     routeState.addToRoute({
@@ -120,6 +128,84 @@ function followRoute({
     });
   }
   renderControls({ onRoll, shouldTweenBetweenPairs, onShouldTweenChange });
+
+  // Will modify chosenColorIndexes after it has chose a color.
+  // Assumes that adjacent indexes in hillColors are very similar.
+  function pickColor(previousIndexes) {
+    var lastColorIndex;
+    if (previousIndexes.length > 0) {
+      lastColorIndex = previousIndexes[previousIndexes.length - 1];
+    }
+    var colorIndex;
+    for (let j = 0; ; ++j) {
+      colorIndex = probable.roll(hillColors.length);
+
+      if (j > maxColorPickTries) {
+        // Just pick anything even if it might be too close to an existing color.
+        console.log('Giving up after picking a new color after', j, 'tries.');
+        break;
+      }
+      if (isNaN(lastColorIndex)) {
+        break;
+      } else if (
+        Math.abs(colorIndex - lastColorIndex) >= minAdjacentColorIndexDist &&
+        previousIndexes
+          .slice(-1 * minNumberOfColorsBeforeRepeating)
+          .indexOf(colorIndex) === -1
+      ) {
+        // This one is far enough away and has not been chosen before.
+        break;
+      }
+    }
+    return colorIndex;
+  }
+
+  function generateInflections(fixedNumberOfInflections = -1) {
+    var numberOfInflections = fixedNumberOfInflections;
+    if (numberOfInflections === -1) {
+      numberOfInflections = numberOfInflectionsFnTable.roll()();
+    }
+    var inflections = [];
+    var previousY = 0;
+    var xPositions = [];
+    const minY = 10;
+    const maxYSeparation = 30;
+    const minYSeparation = 10;
+    const xSegmentSize = 100 / (numberOfInflections - 1);
+
+    for (let k = 1; k < numberOfInflections - 1; ++k) {
+      let jitter = probable.roll(maxJitter - (numberOfInflections - 3)) + 1;
+      xPositions.push(~~(k * xSegmentSize) + jitter);
+    }
+    // xPositions.sort();
+    xPositions.unshift(0);
+    xPositions.push(100);
+
+    for (let j = 0; j < numberOfInflections; ++j) {
+      let y = probable.roll(100 - minY) + minY;
+
+      let delta =
+        minYSeparation + probable.roll(maxYSeparation - minYSeparation);
+      delta *= probable.roll(2) === 0 ? -1 : 1;
+      y = previousY + delta;
+      if (y < 0) {
+        y = previousY - delta;
+      }
+      previousY = y;
+
+      inflections.push(`${xPositions[j]},${y}`);
+    }
+    return inflections;
+  }
+
+  // A level spec is an array. The first element is the color. The rest
+  // are the extremes in the hills.
+  function generateLevelSpec(color, fixedNumberOfInflections) {
+    return {
+      color,
+      inflections: generateInflections(fixedNumberOfInflections)
+    };
+  }
 }
 
 function onRoll() {
@@ -135,83 +221,8 @@ function onShouldTweenChange(shouldTween) {
     routeState.removeFromRoute('tweenBetweenPairs');
   }
 }
-
-// Will modify chosenColorIndexes after it has chose a color.
-// Assumes that adjacent indexes in hillColors are very similar.
-function pickColor(previousIndexes) {
-  var lastColorIndex;
-  if (previousIndexes.length > 0) {
-    lastColorIndex = previousIndexes[previousIndexes.length - 1];
-  }
-  var colorIndex;
-  for (let j = 0; ; ++j) {
-    colorIndex = probable.roll(hillColors.length);
-
-    if (j > maxColorPickTries) {
-      // Just pick anything even if it might be too close to an existing color.
-      console.log('Giving up after picking a new color after', j, 'tries.');
-      break;
-    }
-    if (isNaN(lastColorIndex)) {
-      break;
-    } else if (
-      Math.abs(colorIndex - lastColorIndex) >= minAdjacentColorIndexDist &&
-      previousIndexes
-        .slice(-1 * minNumberOfColorsBeforeRepeating)
-        .indexOf(colorIndex) === -1
-    ) {
-      // This one is far enough away and has not been chosen before.
-      break;
-    }
-  }
-  return colorIndex;
-}
-
-// A level spec is an array. The first element is the color. The rest
-// are the extremes in the hills.
-function generateLevelSpec(color, fixedNumberOfInflections) {
-  return { color, inflections: generateInflections(fixedNumberOfInflections) };
-}
-
 function formatLevelSpec({ color, inflections }) {
   return `${color};${inflections.join(';')}`;
-}
-
-function generateInflections(fixedNumberOfInflections = -1) {
-  var numberOfInflections = fixedNumberOfInflections;
-  if (numberOfInflections === -1) {
-    numberOfInflections = numberOfInflectionsFnTable.roll()();
-  }
-  var inflections = [];
-  var previousY = 0;
-  var xPositions = [];
-  const minY = 10;
-  const maxYSeparation = 30;
-  const minYSeparation = 10;
-  const xSegmentSize = 100 / (numberOfInflections - 1);
-
-  for (let k = 1; k < numberOfInflections - 1; ++k) {
-    let jitter = probable.roll(maxJitter - (numberOfInflections - 3)) + 1;
-    xPositions.push(~~(k * xSegmentSize) + jitter);
-  }
-  // xPositions.sort();
-  xPositions.unshift(0);
-  xPositions.push(100);
-
-  for (let j = 0; j < numberOfInflections; ++j) {
-    let y = probable.roll(100 - minY) + minY;
-
-    let delta = minYSeparation + probable.roll(maxYSeparation - minYSeparation);
-    delta *= probable.roll(2) === 0 ? -1 : 1;
-    y = previousY + delta;
-    if (y < 0) {
-      y = previousY - delta;
-    }
-    previousY = y;
-
-    inflections.push(`${xPositions[j]},${y}`);
-  }
-  return inflections;
 }
 
 function parseLevelSpec(spec) {
