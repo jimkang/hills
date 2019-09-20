@@ -108,19 +108,27 @@ function followRoute({
   } else {
     renderHills({
       levelSpecs: levelSpecs.split('|').map(parseLevelSpec),
-      debug: debug,
+      debug,
       tweenBetweenPairs: tweenBetweenPairs === 'yes',
-      extraCtrlPtSeparation: extraCtrlPtSeparation,
+      extraCtrlPtSeparation,
       showHillLines: showHillLines === 'yes'
     });
   }
-  renderControls({ onRoll });
+  renderControls({ onRoll, shouldTweenBetweenPairs, onShouldTweenChange });
 }
 
 function onRoll() {
   routeState.removeFromRoute('fadeBackLayers', false);
   routeState.removeFromRoute('showHillLines', false);
   routeState.removeFromRoute('levelSpecs');
+}
+
+function onShouldTweenChange(shouldTween) {
+  if (shouldTween) {
+    routeState.addToRoute({ tweenBetweenPairs: 'yes' });
+  } else {
+    routeState.removeFromRoute('tweenBetweenPairs');
+  }
 }
 
 // Will modify chosenColorIndexes after it has chose a color.
