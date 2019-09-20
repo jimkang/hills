@@ -55,41 +55,63 @@ var routeState = RouteState({
   routeState.routeFromHash();
 })();
 
-function followRoute(routeDict) {
-  if (!routeDict.showHillLines) {
+function followRoute({
+  showHillLines,
+  levelSpecs,
+  fadeBackLayers,
+  debug,
+  extraCtrlPtSeparation,
+  tweenBetweenPairs
+}) {
+  const shouldTweenBetweenPairs = tweenBetweenPairs === 'yes';
+
+  if (!showHillLines) {
     routeState.addToRoute({
       showHillLines: probable.roll(5) == 0 ? 'yes' : 'no'
     });
     return;
   }
 
-  if (!routeDict.levelSpecs) {
-    if (!routeDict.fadeBackLayers) {
+  if (!levelSpecs) {
+    if (!fadeBackLayers) {
       routeState.addToRoute({
         fadeBackLayers: probable.roll(10) > 0 ? 'yes' : 'no'
       });
       return;
     }
-    let levelSpecs = [];
+    levelSpecs = [];
     let previousColorIndexes = [];
     let numberOfLevels = probable.rollDie(maxNumberOfLevelsTable.roll());
+    if (shouldTweenBetweenPairs) {
+      numberOfLevels = 2; //*= 2;
+    }
+    let prevLevelInflectionCount = -1;
     for (let i = 0; i < numberOfLevels; ++i) {
       let colorIndex = pickColor(previousColorIndexes);
       previousColorIndexes.push(colorIndex);
       let fadeLevel = 0;
-      if (routeDict.fadeBackLayers === 'yes') {
+      if (fadeBackLayers === 'yes') {
         fadeLevel = (numberOfLevels - i - 1) / numberOfLevels;
       }
-      levelSpecs.push(generateLevelSpec(fade(fadeLevel, hillColors[i])));
+      let fixedNumberOfInflections = -1;
+      if (shouldTweenBetweenPairs && i % 2 === 1) {
+        fixedNumberOfInflections = prevLevelInflectionCount;
+      }
+      let { color, inflections } = generateLevelSpec(
+        fade(fadeLevel, hillColors[i]),
+        fixedNumberOfInflections
+      );
+      levelSpecs.push(formatLevelSpec({ color, inflections }));
+      prevLevelInflectionCount = inflections.length;
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
     renderHills({
-      levelSpecs: routeDict.levelSpecs.split('|').map(parseLevelSpec),
-      debug: routeDict.debug,
-      animatePairs: routeDict.animatePairs,
-      extraCtrlPtSeparation: routeDict.extraCtrlPtSeparation,
-      showHillLines: routeDict.showHillLines === 'yes'
+      levelSpecs: levelSpecs.split('|').map(parseLevelSpec),
+      debug: debug,
+      tweenBetweenPairs: tweenBetweenPairs === 'yes',
+      extraCtrlPtSeparation: extraCtrlPtSeparation,
+      showHillLines: showHillLines === 'yes'
     });
   }
   renderControls({ onRoll });
@@ -134,12 +156,19 @@ function pickColor(previousIndexes) {
 
 // A level spec is an array. The first element is the color. The rest
 // are the extremes in the hills.
-function generateLevelSpec(color) {
-  return `${color};${generateInflections().join(';')}`;
+function generateLevelSpec(color, fixedNumberOfInflections) {
+  return { color, inflections: generateInflections(fixedNumberOfInflections) };
 }
 
-function generateInflections() {
-  var numberOfInflections = numberOfInflectionsFnTable.roll()();
+function formatLevelSpec({ color, inflections }) {
+  return `${color};${inflections.join(';')}`;
+}
+
+function generateInflections(fixedNumberOfInflections = -1) {
+  var numberOfInflections = fixedNumberOfInflections;
+  if (numberOfInflections === -1) {
+    numberOfInflections = numberOfInflectionsFnTable.roll()();
+  }
   var inflections = [];
   var previousY = 0;
   var xPositions = [];

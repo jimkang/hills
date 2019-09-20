@@ -11,7 +11,7 @@ var board = d3.select('.board');
 function renderHills({
   levelSpecs = [['green', [50, 100]]],
   debug,
-  animatePairs,
+  tweenBetweenPairs,
   extraCtrlPtSeparation,
   showHillLines
 }) {
@@ -31,9 +31,12 @@ function renderHills({
   hillRoot.selectAll('*').remove();
   debugLayer.selectAll('*').remove();
 
-  if (animatePairs && levelSpecs.length === 2) {
-    let hillPath = renderHillLevel(levelSpecs[0], 0);
-    renderHillTransition(levelSpecs[1], hillPath);
+  if (tweenBetweenPairs && levelSpecs.length % 2 === 0) {
+    for (let i = 0; i < levelSpecs.length; i += 2) {
+      let hillPath = renderHillLevel(levelSpecs[i], i / 2);
+      renderHillTransition({ finalSpec: levelSpecs[i + 1], hillPath });
+      //renderHillLevel(levelSpecs[i + 1], i/2);
+    }
   } else {
     levelSpecs.forEach(renderHillLevel);
   }
@@ -70,18 +73,21 @@ function renderHills({
     return hillPaths;
   }
 
-  function renderHillTransition(transitionSpec, hillPath) {
-    var transitionBezierCurves = curvesFromExtremes(transitionSpec.slice(1));
-    var color = transitionSpec[0];
-    var extremeCoords = transitionSpec.slice(1).map(scaleToViewBox);
-    var transitionPath = `M ${extremeCoords[0].join(',')} `;
-    transitionPath += transitionBezierCurves.map(pathStringForCurve).join('\n');
-    transitionPath += `\nL${width},${height} L0,${width}Z`;
+  function renderHillTransition({ finalSpec, hillPath }) {
+    var color = finalSpec[0];
+    var finalExtremes = finalSpec.slice(1).map(scaleToViewBox);
+    var finalBezierCurves = curvesFromExtremes(
+      finalExtremes,
+      extraCtrlPtSeparation
+    );
+    var finalPath = `M ${finalExtremes[0].join(',')} `;
+    finalPath += finalBezierCurves.map(pathStringForCurve).join('\n');
+    finalPath += `\nL${width},${height} L0,${width}Z`;
     hillPath
       .transition()
-      .duration(1000)
+      .duration(3000)
       .ease(ease.easeLinear)
-      .attr('d', transitionPath)
+      .attr('d', finalPath)
       .attr('fill', color);
   }
 
