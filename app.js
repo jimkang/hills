@@ -61,8 +61,12 @@ function followRoute({
   fadeBackLayers,
   debug,
   extraCtrlPtSeparation,
-  tweenBetweenPairs
+  tweenBetweenPairs,
+  tweenLengthMS = 5000
 }) {
+  if (isNaN(tweenLengthMS)) {
+    tweenLengthMS = 5000;
+  }
   const shouldTweenBetweenPairs = tweenBetweenPairs === 'yes';
 
   if (!showHillLines) {
@@ -111,7 +115,8 @@ function followRoute({
       debug,
       tweenBetweenPairs: tweenBetweenPairs === 'yes',
       extraCtrlPtSeparation,
-      showHillLines: showHillLines === 'yes'
+      showHillLines: showHillLines === 'yes',
+      tweenLengthMS
     });
   }
   renderControls({ onRoll, shouldTweenBetweenPairs, onShouldTweenChange });

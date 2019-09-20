@@ -13,7 +13,8 @@ function renderHills({
   debug,
   tweenBetweenPairs,
   extraCtrlPtSeparation,
-  showHillLines
+  showHillLines,
+  tweenLengthMS
 }) {
   // console.log(levelSpecs);
   var width = +window.innerWidth;
@@ -86,7 +87,7 @@ function renderHills({
     function initialToFinal() {
       hillPath
         .transition()
-        .duration(3000)
+        .duration(tweenLengthMS)
         .ease(ease.easeLinear)
         .attr('d', finalPath)
         .attr('fill', finalColor)
@@ -96,7 +97,7 @@ function renderHills({
     function finalToInitial() {
       hillPath
         .transition()
-        .duration(3000)
+        .duration(tweenLengthMS)
         .ease(ease.easeLinear)
         .attr('d', initialPath)
         .attr('fill', initialColor)
