@@ -211,7 +211,8 @@ function followRoute({
 function onRoll() {
   routeState.removeFromRoute('fadeBackLayers', false);
   routeState.removeFromRoute('showHillLines', false);
-  routeState.removeFromRoute('levelSpecs');
+  routeState.removeFromRoute('levelSpecs', false);
+  routeState.removeFromRoute('seed');
 }
 
 function onShouldTweenChange(shouldTween) {
