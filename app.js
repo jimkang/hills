@@ -83,7 +83,7 @@ function followRoute({
     let previousColorIndexes = [];
     let numberOfLevels = probable.rollDie(maxNumberOfLevelsTable.roll());
     if (shouldTweenBetweenPairs) {
-      numberOfLevels = 2; //*= 2;
+      numberOfLevels *= 2;
     }
     let prevLevelInflectionCount = -1;
     for (let i = 0; i < numberOfLevels; ++i) {

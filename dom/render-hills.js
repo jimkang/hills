@@ -34,8 +34,11 @@ function renderHills({
   if (tweenBetweenPairs && levelSpecs.length % 2 === 0) {
     for (let i = 0; i < levelSpecs.length; i += 2) {
       let hillPath = renderHillLevel(levelSpecs[i], i / 2);
-      renderHillTransition({ finalSpec: levelSpecs[i + 1], hillPath });
-      //renderHillLevel(levelSpecs[i + 1], i/2);
+      scheduleHillTransition({
+        initialSpec: levelSpecs[i],
+        finalSpec: levelSpecs[i + 1],
+        hillPath
+      });
     }
   } else {
     levelSpecs.forEach(renderHillLevel);
@@ -73,22 +76,32 @@ function renderHills({
     return hillPaths;
   }
 
-  function renderHillTransition({ finalSpec, hillPath }) {
-    var color = finalSpec[0];
-    var finalExtremes = finalSpec.slice(1).map(scaleToViewBox);
-    var finalBezierCurves = curvesFromExtremes(
-      finalExtremes,
-      extraCtrlPtSeparation
-    );
-    var finalPath = `M ${finalExtremes[0].join(',')} `;
-    finalPath += finalBezierCurves.map(pathStringForCurve).join('\n');
-    finalPath += `\nL${width},${height} L0,${width}Z`;
-    hillPath
-      .transition()
-      .duration(3000)
-      .ease(ease.easeLinear)
-      .attr('d', finalPath)
-      .attr('fill', color);
+  function scheduleHillTransition({ initialSpec, finalSpec, hillPath }) {
+    var initialColor = initialSpec[0];
+    var initialPath = getPathForSpec(initialSpec);
+    var finalColor = finalSpec[0];
+    var finalPath = getPathForSpec(finalSpec);
+    initialToFinal();
+
+    function initialToFinal() {
+      hillPath
+        .transition()
+        .duration(3000)
+        .ease(ease.easeLinear)
+        .attr('d', finalPath)
+        .attr('fill', finalColor)
+        .on('end', finalToInitial);
+    }
+
+    function finalToInitial() {
+      hillPath
+        .transition()
+        .duration(3000)
+        .ease(ease.easeLinear)
+        .attr('d', initialPath)
+        .attr('fill', initialColor)
+        .on('end', initialToFinal);
+    }
   }
 
   function scaleToViewBox(coordsScaledTo100) {
@@ -96,6 +109,15 @@ function renderHills({
       roundToTwo((coordsScaledTo100[0] / 100) * width),
       roundToTwo((coordsScaledTo100[1] / 100) * height)
     ];
+  }
+
+  function getPathForSpec(spec) {
+    var extremes = spec.slice(1).map(scaleToViewBox);
+    var bezierCurves = curvesFromExtremes(extremes, extraCtrlPtSeparation);
+    var path = `M ${extremes[0].join(',')} `;
+    path += bezierCurves.map(pathStringForCurve).join('\n');
+    path += `\nL${width},${height} L0,${width}Z`;
+    return path;
   }
 }
 
