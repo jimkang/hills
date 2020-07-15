@@ -80,6 +80,8 @@ function renderHills({
 
     if (debug || showHillLines) {
       hillPaths.classed('outlined', true);
+      hillPaths.attr('stroke', 'white');
+      hillPaths.attr('stroke-width', '1px');
     }
     return hillPaths;
   }

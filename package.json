@@ -26,6 +26,7 @@
     "uglify-es": "^3.3.9"
   },
   "dependencies": {
+    "@jimkang/randomid": "^1.0.2",
     "basic-browser-request": "^8.0.0",
     "d3-color": "^1.2.8",
     "d3-ease": "^1.0.3",

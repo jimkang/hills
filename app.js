@@ -7,6 +7,8 @@ var hsl = require('d3-color').hsl;
 var seedrandom = require('seedrandom');
 var sanzoCombos = require('./sanzo-hex-combos.json');
 
+var randomId = require('@jimkang/randomid')();
+
 const maxJitter = 5;
 const minAdjacentColorIndexDist = 2;
 const maxColorPickTries = 5;
@@ -84,7 +86,8 @@ function followRoute({
   const shouldTweenBetweenPairs = tweenBetweenPairs === 'yes';
 
   if (!seed) {
-    routeState.addToRoute({ seed: new Date().toISOString() });
+    //routeState.addToRoute({ seed: new Date().toISOString() });
+    routeState.addToRoute({ seed: randomId(4) });
   }
 
   var probable = Probable({ random: seedrandom(seed) });
