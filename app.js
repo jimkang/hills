@@ -32,7 +32,7 @@ var hillColors = [
   'rgb(143, 121, 255)',
   'rgb(213, 92, 255)',
   'rgb(255, 52, 240)',
-  'rgb(255, 0, 198'
+  'rgb(255, 0, 198)'
 ];
 
 var routeState = RouteState({
@@ -247,6 +247,9 @@ function fade(level, clrString) {
   var clr = hsl(clrString);
   clr.s -= level;
   clr.l -= level / 3;
+  if (clr.l < 0.2) {
+    clr.l = 0.2;
+  }
   return clr.toString();
 }
 

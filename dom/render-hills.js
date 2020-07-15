@@ -3,7 +3,7 @@ require('d3-transition');
 var ease = require('d3-ease');
 var hillRoot = d3.select('.hills');
 var debugLayer = d3.select('#debug-layer');
-var board = d3.select('.board');
+//var board = d3.select('.board');
 
 // This module assumes: viewBox="0 0 100 100"
 // levelSpecs is an array in which each member is a levelSpec.
@@ -17,6 +17,9 @@ function renderHills({
   tweenLengthMS
 }) {
   // console.log(levelSpecs);
+  const width = 100;
+  const height = 100;
+  /*
   var width = +window.innerWidth;
   var height = +window.innerHeight;
 
@@ -28,6 +31,7 @@ function renderHills({
   board.attr('width', width);
   board.attr('height', height);
   board.attr('viewBox', `0 0 ${width} ${height}`);
+  */
 
   hillRoot.selectAll('*').remove();
   debugLayer.selectAll('*').remove();
