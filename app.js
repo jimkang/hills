@@ -87,7 +87,10 @@ function followRoute({
 
   if (!seed) {
     //routeState.addToRoute({ seed: new Date().toISOString() });
-    routeState.addToRoute({ seed: randomId(4) });
+    // Going to try using the seed as a name here.
+    let seed = randomId(4);
+    seed = seed.charAt(0).toUpperCase() + seed.slice(1).toLowerCase();
+    routeState.addToRoute({ seed });
   }
 
   var probable = Probable({ random: seedrandom(seed) });
