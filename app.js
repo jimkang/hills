@@ -134,11 +134,11 @@ function followRoute({
       let hillColor;
       let colorIndex = pickColor(palette, previousColorIndexes);
       previousColorIndexes.push(colorIndex);
-      hillColor = palette[i];
+      hillColor = palette[colorIndex];
 
       let fadeLevel = 0;
       if (fadeBackLayers === 'yes') {
-        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels / 5;
+        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels / 3;
       }
       let fixedNumberOfInflections = -1;
       if (shouldTweenBetweenPairs && i % 2 === 1) {

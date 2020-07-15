@@ -57,7 +57,7 @@ function renderHills({
     var extremeCoords = levelSpec.slice(1).map(scaleToViewBox);
     var bezierCurves = curvesFromExtremes(extremeCoords, extraCtrlPtSeparation);
 
-    const rootTranslate = `translate(0, ${(level + 1) *
+    const rootTranslate = `translate(0, ${level *
       ~~(100 / levelSpecs.length)})`;
 
     if (debug) {
