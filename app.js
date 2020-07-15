@@ -5,6 +5,7 @@ var renderControls = require('./dom/render-controls');
 var Probable = require('probable').createProbable;
 var hsl = require('d3-color').hsl;
 var seedrandom = require('seedrandom');
+var sanzoCombos = require('./sanzo-hex-combos.json');
 
 const maxJitter = 5;
 const minAdjacentColorIndexDist = 2;
@@ -120,19 +121,29 @@ function followRoute({
       numberOfLevels *= 2;
     }
     let prevLevelInflectionCount = -1;
+
+    let palette = hillColors;
+    if (probable.roll(2) === 0) {
+      palette = probable.pickFromArray(sanzoCombos);
+    }
+
     for (let i = 0; i < numberOfLevels; ++i) {
-      let colorIndex = pickColor(previousColorIndexes);
+      let hillColor;
+      let colorIndex = pickColor(palette, previousColorIndexes);
       previousColorIndexes.push(colorIndex);
+      hillColor = palette[i];
+
       let fadeLevel = 0;
       if (fadeBackLayers === 'yes') {
-        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels / 4;
+        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels / 5;
       }
       let fixedNumberOfInflections = -1;
       if (shouldTweenBetweenPairs && i % 2 === 1) {
         fixedNumberOfInflections = prevLevelInflectionCount;
       }
+
       let { color, inflections } = generateLevelSpec(
-        fade(fadeLevel, hillColors[i]),
+        fade(fadeLevel, hillColor),
         fixedNumberOfInflections
       );
       levelSpecs.push(formatLevelSpec({ color, inflections }));
@@ -159,14 +170,14 @@ function followRoute({
 
   // Will modify chosenColorIndexes after it has chose a color.
   // Assumes that adjacent indexes in hillColors are very similar.
-  function pickColor(previousIndexes) {
+  function pickColor(palette, previousIndexes) {
     var lastColorIndex;
     if (previousIndexes.length > 0) {
       lastColorIndex = previousIndexes[previousIndexes.length - 1];
     }
     var colorIndex;
     for (let j = 0; ; ++j) {
-      colorIndex = probable.roll(hillColors.length);
+      colorIndex = probable.roll(palette.length);
 
       if (j > maxColorPickTries) {
         // Just pick anything even if it might be too close to an existing color.
