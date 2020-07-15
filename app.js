@@ -78,7 +78,8 @@ function followRoute({
   extraCtrlPtSeparation,
   tweenBetweenPairs,
   tweenLengthMS = 5000,
-  seed
+  seed,
+  minLevels
 }) {
   if (isNaN(tweenLengthMS)) {
     tweenLengthMS = 5000;
@@ -123,6 +124,10 @@ function followRoute({
     levelSpecs = [];
     let previousColorIndexes = [];
     let numberOfLevels = probable.rollDie(maxNumberOfLevelsTable.roll());
+
+    if (minLevels > numberOfLevels) {
+      numberOfLevels = minLevels;
+    }
     if (shouldTweenBetweenPairs) {
       numberOfLevels *= 2;
     }
