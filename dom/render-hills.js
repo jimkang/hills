@@ -3,6 +3,7 @@ require('d3-transition');
 var ease = require('d3-ease');
 var hillRoot = d3.select('.hills');
 var debugLayer = d3.select('#debug-layer');
+var bgRect = d3.select('#bg-rect');
 //var board = d3.select('.board');
 
 // This module assumes: viewBox="0 0 100 100"
@@ -14,8 +15,10 @@ function renderHills({
   tweenBetweenPairs,
   extraCtrlPtSeparation,
   showHillLines,
-  tweenLengthMS
+  tweenLengthMS,
+  bgColor
 }) {
+  bgRect.attr('fill', bgColor);
   // console.log(levelSpecs);
   const width = 100;
   const height = 100;
@@ -33,7 +36,7 @@ function renderHills({
   board.attr('viewBox', `0 0 ${width} ${height}`);
   */
 
-  hillRoot.selectAll('*').remove();
+  hillRoot.selectAll('path').remove();
   debugLayer.selectAll('*').remove();
 
   if (tweenBetweenPairs && levelSpecs.length % 2 === 0) {

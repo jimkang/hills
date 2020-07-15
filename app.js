@@ -35,6 +35,28 @@ var hillColors = [
   'rgb(255, 0, 198)'
 ];
 
+var sanzoSwatch4Colors = [
+  '#c0a9b3',
+  '#ca92a8',
+  '#b984af',
+  '#bf5892',
+  '#9a72aa',
+  '#a36aa5',
+  '#80719e',
+  '#66629c',
+  '#6450a1',
+  '#84565b',
+  '#70727c',
+  '#8c4c62',
+  '#704357',
+  '#7a4456',
+  '#713b4c',
+  '#4f4086',
+  '#59256a',
+  '#501345',
+  '#4e1d4c'
+];
+
 var routeState = RouteState({
   followRoute,
   windowObject: window
@@ -118,13 +140,19 @@ function followRoute({
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
+    let bgColor = 'black';
+    if (probable.roll(2) === 0) {
+      bgColor = probable.pickFromArray(sanzoSwatch4Colors);
+    }
+
     renderHills({
       levelSpecs: levelSpecs.split('|').map(parseLevelSpec),
       debug,
       tweenBetweenPairs: tweenBetweenPairs === 'yes',
       extraCtrlPtSeparation,
       showHillLines: showHillLines === 'yes',
-      tweenLengthMS
+      tweenLengthMS,
+      bgColor
     });
   }
   renderControls({ onRoll, shouldTweenBetweenPairs, onShouldTweenChange });
