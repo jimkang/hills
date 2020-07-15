@@ -125,7 +125,7 @@ function followRoute({
       previousColorIndexes.push(colorIndex);
       let fadeLevel = 0;
       if (fadeBackLayers === 'yes') {
-        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels;
+        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels / 4;
       }
       let fixedNumberOfInflections = -1;
       if (shouldTweenBetweenPairs && i % 2 === 1) {
