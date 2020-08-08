@@ -6,6 +6,7 @@ var Probable = require('probable').createProbable;
 var hsl = require('d3-color').hsl;
 var seedrandom = require('seedrandom');
 var sanzoCombos = require('./sanzo-hex-combos.json');
+var { version } = require('./package.json');
 
 var randomId = require('@jimkang/randomid')();
 
@@ -67,6 +68,7 @@ var routeState = RouteState({
 
 (function go() {
   window.onerror = reportTopLevelError;
+  document.getElementById('version-info').textContent = version;
   routeState.routeFromHash();
 })();
 

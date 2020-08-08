@@ -13,6 +13,11 @@ run:
 build:
 	$(BROWSERIFY) $(TRANSFORM_SWITCH) app.js | $(UGLIFY) -c -m -o index.js
 
+deploy: build
+	git commit -a -m"Build."
+	npm version patch
+	make pushall
+
 pushall: sync
 	git push origin gh-pages
 
