@@ -5,6 +5,9 @@ var renderControls = require('./dom/render-controls');
 var Probable = require('probable').createProbable;
 var hsl = require('d3-color').hsl;
 var seedrandom = require('seedrandom');
+var sanzoCombos = require('./sanzo-hex-combos.json');
+
+var randomId = require('@jimkang/randomid')();
 
 const maxJitter = 5;
 const minAdjacentColorIndexDist = 2;
@@ -32,7 +35,29 @@ var hillColors = [
   'rgb(143, 121, 255)',
   'rgb(213, 92, 255)',
   'rgb(255, 52, 240)',
-  'rgb(255, 0, 198'
+  'rgb(255, 0, 198)'
+];
+
+var sanzoSwatch4Colors = [
+  '#c0a9b3',
+  '#ca92a8',
+  '#b984af',
+  '#bf5892',
+  '#9a72aa',
+  '#a36aa5',
+  '#80719e',
+  '#66629c',
+  '#6450a1',
+  '#84565b',
+  '#70727c',
+  '#8c4c62',
+  '#704357',
+  '#7a4456',
+  '#713b4c',
+  '#4f4086',
+  '#59256a',
+  '#501345',
+  '#4e1d4c'
 ];
 
 var routeState = RouteState({
@@ -53,7 +78,8 @@ function followRoute({
   extraCtrlPtSeparation,
   tweenBetweenPairs,
   tweenLengthMS = 5000,
-  seed
+  seed,
+  minLevels
 }) {
   if (isNaN(tweenLengthMS)) {
     tweenLengthMS = 5000;
@@ -61,7 +87,11 @@ function followRoute({
   const shouldTweenBetweenPairs = tweenBetweenPairs === 'yes';
 
   if (!seed) {
-    routeState.addToRoute({ seed: new Date().toISOString() });
+    //routeState.addToRoute({ seed: new Date().toISOString() });
+    // Going to try using the seed as a name here.
+    let seed = randomId(4);
+    seed = seed.charAt(0).toUpperCase() + seed.slice(1).toLowerCase();
+    routeState.addToRoute({ seed });
   }
 
   var probable = Probable({ random: seedrandom(seed) });
@@ -94,23 +124,37 @@ function followRoute({
     levelSpecs = [];
     let previousColorIndexes = [];
     let numberOfLevels = probable.rollDie(maxNumberOfLevelsTable.roll());
+
+    if (minLevels > numberOfLevels) {
+      numberOfLevels = minLevels;
+    }
     if (shouldTweenBetweenPairs) {
       numberOfLevels *= 2;
     }
     let prevLevelInflectionCount = -1;
+
+    let palette = hillColors;
+    if (probable.roll(2) === 0) {
+      palette = probable.pickFromArray(sanzoCombos);
+    }
+
     for (let i = 0; i < numberOfLevels; ++i) {
-      let colorIndex = pickColor(previousColorIndexes);
+      let hillColor;
+      let colorIndex = pickColor(palette, previousColorIndexes);
       previousColorIndexes.push(colorIndex);
+      hillColor = palette[colorIndex];
+
       let fadeLevel = 0;
       if (fadeBackLayers === 'yes') {
-        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels;
+        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels / 3;
       }
       let fixedNumberOfInflections = -1;
       if (shouldTweenBetweenPairs && i % 2 === 1) {
         fixedNumberOfInflections = prevLevelInflectionCount;
       }
+
       let { color, inflections } = generateLevelSpec(
-        fade(fadeLevel, hillColors[i]),
+        fade(fadeLevel, hillColor),
         fixedNumberOfInflections
       );
       levelSpecs.push(formatLevelSpec({ color, inflections }));
@@ -118,27 +162,33 @@ function followRoute({
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
+    let bgColor = 'black';
+    if (probable.roll(2) === 0) {
+      bgColor = probable.pickFromArray(sanzoSwatch4Colors);
+    }
+
     renderHills({
       levelSpecs: levelSpecs.split('|').map(parseLevelSpec),
       debug,
       tweenBetweenPairs: tweenBetweenPairs === 'yes',
       extraCtrlPtSeparation,
       showHillLines: showHillLines === 'yes',
-      tweenLengthMS
+      tweenLengthMS,
+      bgColor
     });
   }
   renderControls({ onRoll, shouldTweenBetweenPairs, onShouldTweenChange });
 
   // Will modify chosenColorIndexes after it has chose a color.
   // Assumes that adjacent indexes in hillColors are very similar.
-  function pickColor(previousIndexes) {
+  function pickColor(palette, previousIndexes) {
     var lastColorIndex;
     if (previousIndexes.length > 0) {
       lastColorIndex = previousIndexes[previousIndexes.length - 1];
     }
     var colorIndex;
     for (let j = 0; ; ++j) {
-      colorIndex = probable.roll(hillColors.length);
+      colorIndex = probable.roll(palette.length);
 
       if (j > maxColorPickTries) {
         // Just pick anything even if it might be too close to an existing color.
@@ -247,6 +297,9 @@ function fade(level, clrString) {
   var clr = hsl(clrString);
   clr.s -= level;
   clr.l -= level / 3;
+  if (clr.l < 0.2) {
+    clr.l = 0.2;
+  }
   return clr.toString();
 }
 

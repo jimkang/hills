@@ -1,0 +1,39 @@
+<svg class="board" width="1600" height="900" viewBox="0 0 100 100" preserveAspectRatio="none">
+  <clipPath id="cut-off-bottom">
+    <rect x="0" y="0" width="100" height="100"></rect>
+  </clipPath>
+  <g class="hills" clip-path="url(#cut-off-bottom)">
+    <rect id="bg-rect" x="0" y="0" width="100" height="100" fill="#4f4086"></rect>
+  <path d="M 0,25 C 18,25
+  18,54
+  36,54
+C 52.5,54
+  52.5,38
+  69,38
+C 84.5,38
+  84.5,28
+  100,28
+L100,100 L0,100Z" transform="translate(0, 0)" fill="rgb(44, 30, 72)"></path><path d="M 0,23 C 18.5,23
+  18.5,44
+  37,44
+C 52,44
+  52,55
+  67,55
+C 83.5,55
+  83.5,81
+  100,81
+L100,100 L0,100Z" transform="translate(0, 33)" fill="rgb(243, 181, 95)"></path><path d="M 0,19 C 13,19
+  13,29
+  26,29
+C 38.5,29
+  38.5,53
+  51,53
+C 63.5,53
+  63.5,34
+  76,34
+C 88,34
+  88,48
+  100,48
+L100,100 L0,100Z" transform="translate(0, 66)" fill="rgb(255, 242, 0)"></path></g>
+  <g id="debug-layer"></g>
+</svg>

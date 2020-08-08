@@ -1,0 +1,21 @@
+<svg class="board" width="1600" height="900" viewBox="0 0 100 100" preserveAspectRatio="none">
+  <clipPath id="cut-off-bottom">
+    <rect x="0" y="0" width="100" height="100"></rect>
+  </clipPath>
+  <g class="hills" clip-path="url(#cut-off-bottom)">
+    <rect id="bg-rect" x="0" y="0" width="100" height="100" fill="#c0a9b3"></rect>
+  <path d="M 0,14 C 14,14
+  14,31
+  28,31
+C 40.5,31
+  40.5,8
+  53,8
+C 64.5,8
+  64.5,24
+  76,24
+C 88,24
+  88,50
+  100,50
+L100,100 L0,100Z" transform="translate(0, 0)" fill="rgb(19, 56, 83)"></path></g>
+  <g id="debug-layer"></g>
+</svg>

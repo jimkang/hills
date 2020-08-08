@@ -1,0 +1,84 @@
+<svg class="board" width="1600" height="900" viewBox="0 0 100 100" preserveAspectRatio="none">
+  <clipPath id="cut-off-bottom">
+    <rect x="0" y="0" width="100" height="100"></rect>
+  </clipPath>
+  <g class="hills" clip-path="url(#cut-off-bottom)">
+    <rect id="bg-rect" x="0" y="0" width="100" height="100" fill="black"></rect>
+  <path d="M 0,24 C 14,24
+  14,8
+  28,8
+C 40,8
+  40,18
+  52,18
+C 65,18
+  65,36
+  78,36
+C 89,36
+  89,52
+  100,52
+L100,100 L0,100Z" transform="translate(0, 0)" fill="rgb(204, 146, 123)" class="outlined" stroke="white" stroke-width="1px"></path><path d="M 0,15 C 26,15
+  26,34
+  52,34
+C 76,34
+  76,17
+  100,17
+L100,100 L0,100Z" transform="translate(0, 11)" fill="rgb(18, 118, 104)" class="outlined" stroke="white" stroke-width="1px"></path><path d="M 0,27 C 27.5,27
+  27.5,16
+  55,16
+C 77.5,16
+  77.5,43
+  100,43
+L100,100 L0,100Z" transform="translate(0, 22)" fill="rgb(214, 150, 126)" class="outlined" stroke="white" stroke-width="1px"></path><path d="M 0,10 C 17.5,10
+  17.5,33
+  35,33
+C 51.5,33
+  51.5,45
+  68,45
+C 84,45
+  84,22
+  100,22
+L100,100 L0,100Z" transform="translate(0, 33)" fill="rgb(14, 135, 118)" class="outlined" stroke="white" stroke-width="1px"></path><path d="M 0,12 C 14,12
+  14,2
+  28,2
+C 40.5,2
+  40.5,13
+  53,13
+C 65,13
+  65,36
+  77,36
+C 88.5,36
+  88.5,50
+  100,50
+L100,100 L0,100Z" transform="translate(0, 44)" fill="rgb(190, 105, 116)" class="outlined" stroke="white" stroke-width="1px"></path><path d="M 0,28 C 18,28
+  18,10
+  36,10
+C 52,10
+  52,29
+  68,29
+C 84,29
+  84,41
+  100,41
+L100,100 L0,100Z" transform="translate(0, 55)" fill="rgb(177, 189, 184)" class="outlined" stroke="white" stroke-width="1px"></path><path d="M 0,11 C 18,11
+  18,25
+  36,25
+C 52.5,25
+  52.5,4
+  69,4
+C 84.5,4
+  84.5,25
+  100,25
+L100,100 L0,100Z" transform="translate(0, 66)" fill="rgb(6, 161, 140)" class="outlined" stroke="white" stroke-width="1px"></path><path d="M 0,17 C 26,17
+  26,44
+  52,44
+C 76,44
+  76,57
+  100,57
+L100,100 L0,100Z" transform="translate(0, 77)" fill="rgb(235, 164, 137)" class="outlined" stroke="white" stroke-width="1px"></path><path d="M 0,28 C 26.5,28
+  26.5,3
+  53,3
+C 76.5,3
+  76.5,25
+  100,25
+L100,100 L0,100Z" transform="translate(0, 88)" fill="rgb(180, 205, 194)" class="outlined" stroke="white" stroke-width="1px"></path></g>
+  <g id="debug-layer"></g>
+</svg>

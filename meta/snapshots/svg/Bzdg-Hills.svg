@@ -1,0 +1,72 @@
+<svg class="board" width="1600" height="900" viewBox="0 0 100 100" preserveAspectRatio="none">
+  <clipPath id="cut-off-bottom">
+    <rect x="0" y="0" width="100" height="100"></rect>
+  </clipPath>
+  <g class="hills" clip-path="url(#cut-off-bottom)">
+    <rect id="bg-rect" x="0" y="0" width="100" height="100" fill="black"></rect>
+  <path d="M 0,28 C 17.5,28
+  17.5,0
+  35,0
+C 51,0
+  51,27
+  67,27
+C 83.5,27
+  83.5,55
+  100,55
+L100,100 L0,100Z" transform="translate(0, 0)" fill="rgb(225, 167, 85)"></path><path d="M 0,16 C 27,16
+  27,31
+  54,31
+C 77,31
+  77,16
+  100,16
+L100,100 L0,100Z" transform="translate(0, 16)" fill="rgb(13, 101, 95)"></path><path d="M 0,15 C 13,15
+  13,29
+  26,29
+C 39.5,29
+  39.5,3
+  53,3
+C 65,3
+  65,19
+  77,19
+C 88.5,19
+  88.5,30
+  100,30
+L100,100 L0,100Z" transform="translate(0, 32)" fill="rgb(10, 112, 106)"></path><path d="M 0,10 C 14,10
+  14,33
+  28,33
+C 39.5,33
+  39.5,21
+  51,21
+C 64.5,21
+  64.5,3
+  78,3
+C 89,3
+  89,28
+  100,28
+L100,100 L0,100Z" transform="translate(0, 48)" fill="rgb(7, 125, 117)"></path><path d="M 0,18 C 8.5,18
+  8.5,46
+  17,46
+C 25.5,46
+  25.5,66
+  34,66
+C 42.5,66
+  42.5,53
+  51,53
+C 59,53
+  59,27
+  67,27
+C 75.5,27
+  75.5,51
+  84,51
+C 92,51
+  92,80
+  100,80
+L100,100 L0,100Z" transform="translate(0, 64)" fill="rgb(248, 186, 99)"></path><path d="M 0,13 C 27,13
+  27,41
+  54,41
+C 77,41
+  77,14
+  100,14
+L100,100 L0,100Z" transform="translate(0, 80)" fill="rgb(0, 110, 184)"></path></g>
+  <g id="debug-layer"></g>
+</svg>

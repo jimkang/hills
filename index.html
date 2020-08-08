@@ -7,8 +7,12 @@
 
 <div id="status-message" class="hidden"></div>
 
-<svg class="board" width="100%" height="640" viewBox="0 0 100 100" preserveAspectRatio="none">
-  <g class="hills">
+<svg class="board" width="1600" height="900" viewBox="0 0 100 100" preserveAspectRatio="none">
+  <clipPath id="cut-off-bottom">
+    <rect x="0" y="0" width="100" height="100" />
+  </clipPath>
+  <g class="hills" clip-path="url(#cut-off-bottom)">
+    <rect id="bg-rect" x="0" y="0" width="100" height="100" />
   </g>
   <g id="debug-layer"></g>
 </svg>

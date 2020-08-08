@@ -3,7 +3,8 @@ require('d3-transition');
 var ease = require('d3-ease');
 var hillRoot = d3.select('.hills');
 var debugLayer = d3.select('#debug-layer');
-var board = d3.select('.board');
+var bgRect = d3.select('#bg-rect');
+//var board = d3.select('.board');
 
 // This module assumes: viewBox="0 0 100 100"
 // levelSpecs is an array in which each member is a levelSpec.
@@ -14,9 +15,14 @@ function renderHills({
   tweenBetweenPairs,
   extraCtrlPtSeparation,
   showHillLines,
-  tweenLengthMS
+  tweenLengthMS,
+  bgColor
 }) {
+  bgRect.attr('fill', bgColor);
   // console.log(levelSpecs);
+  const width = 100;
+  const height = 100;
+  /*
   var width = +window.innerWidth;
   var height = +window.innerHeight;
 
@@ -28,8 +34,9 @@ function renderHills({
   board.attr('width', width);
   board.attr('height', height);
   board.attr('viewBox', `0 0 ${width} ${height}`);
+  */
 
-  hillRoot.selectAll('*').remove();
+  hillRoot.selectAll('path').remove();
   debugLayer.selectAll('*').remove();
 
   if (tweenBetweenPairs && levelSpecs.length % 2 === 0) {
@@ -50,7 +57,7 @@ function renderHills({
     var extremeCoords = levelSpec.slice(1).map(scaleToViewBox);
     var bezierCurves = curvesFromExtremes(extremeCoords, extraCtrlPtSeparation);
 
-    const rootTranslate = `translate(0, ${(level + 1) *
+    const rootTranslate = `translate(0, ${level *
       ~~(100 / levelSpecs.length)})`;
 
     if (debug) {
@@ -73,6 +80,8 @@ function renderHills({
 
     if (debug || showHillLines) {
       hillPaths.classed('outlined', true);
+      hillPaths.attr('stroke', 'white');
+      hillPaths.attr('stroke-width', '1px');
     }
     return hillPaths;
   }
