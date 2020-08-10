@@ -1,0 +1,136 @@
+<html>
+  <head>
+    <title>Cat</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+      <svg id="normal-board" width="100%" height="1000" viewBox="0 0 10 10">
+        <path class="head" d=""
+          stroke="black" fill="transparent" stroke-width="0.1" />
+        <path class="left-ear" d=""
+          stroke="black" fill="transparent" stroke-width="0.1" />
+        <!--
+        <path id="circle" d="M 90 50
+          C 90 58.28, 86.56 70, 78.28 78.28
+          C 90 58.28, 86.56 70, 78.28 78.28"
+        -->
+      </svg>
+      <svg id="wobble-board" width="100%" height="1000" viewBox="0 0 10 10">
+        <path class="circle" d=""
+          stroke="black" fill="transparent" stroke-width="0.1" />
+      </svg>
+      <svg id="animation-board" width="100%" height="1000" viewBox="0 0 10 10">
+        <path class="circle" d=""
+          stroke="black" fill="transparent" stroke-width="0.1" />
+      </svg>
+      <svg id="pulse-board" width="100%" height="1000" viewBox="0 0 10 10">
+        <path class="circle" d=""
+          stroke="black" fill="transparent" stroke-width="0.1" />
+      </svg>
+<script>
+var normalBoard = document.getElementById('normal-board');
+var wobbleBoard = document.getElementById('wobble-board');
+var animationBoard = document.getElementById('animation-board');
+var pulseBoard = document.getElementById('pulse-board');
+
+var headPath = normalBoard.querySelector('.head');
+headPath.setAttribute('d', getEllipsePath({ cx: 6, cy: 6, rx: 5, ry: 4, segmentCount: 7, svg: normalBoard }));
+var leftEarPath = normalBoard.querySelector('.left-ear');
+leftEarPath.setAttribute('d', getEllipsePath({ cx: 2.5, cy: 2.5, rx: 2, ry: 2, segmentCount: 3, svg: normalBoard, roundness: 0.5 }));
+
+//var wobblePath = wobbleBoard.querySelector('.circle');
+//wobblePath.setAttribute('d', getEllipsePath(5, 5, 4, 20, wobbleBoard, 0.5, -1));
+
+//var animatedPath = animationBoard.querySelector('.circle');
+//var lastWobbleDirection = -1;
+//window.requestAnimationFrame(setAnimatedPath);
+
+//var pulsePath = pulseBoard.querySelector('.circle');
+//var pulseStep = 0;
+//const pulseUpdateInterval = 1000/7.5;
+//var lastPulseT = performance.now();
+//window.requestAnimationFrame(setPulsePath);
+
+function getEllipsePath({ cx, cy, rx, ry, segmentCount, svg, wobbleLevel = 0.0, initialWobbleDirection = -1, roundness = 1.0 }) {
+  var path = '';
+  const segAngle = 2 * Math.PI / segmentCount;
+  const tanRatio = Math.tan(segAngle);
+  const vMagnitudeFactor = 2/segmentCount * roundness;
+  const xInTermsOfY = rx/ry;
+  const yInTermsOfX = ry/rx;
+  var vecStart = [rx, 0];
+  var segStart = [cx + vecStart[0], cy + vecStart[1]];
+  path += `M ${segStart[0]} ${segStart[1]}\n`;
+  var wobbleDirection = initialWobbleDirection;
+
+  for (var segIndex = 1; segIndex <= segmentCount; ++segIndex) {
+    let vecToCP1 = [-vecStart[1] * vMagnitudeFactor * xInTermsOfY, vecStart[0] * vMagnitudeFactor * yInTermsOfX];
+    let cp1 = [cx + vecStart[0] + vecToCP1[0], cy + vecStart[1] + vecToCP1[1]];
+    cp1 = wobbleCP(cp1, cx, cy, wobbleLevel, wobbleDirection);
+    let vecEnd = getSpotOnOriginEllipse(segIndex * segAngle, rx, ry);
+    let vecToCP2 = [vecEnd[1] * vMagnitudeFactor * xInTermsOfY, -vecEnd[0] * vMagnitudeFactor * yInTermsOfX];
+    let segEnd = [cx + vecEnd[0], cy + vecEnd[1]];
+
+    addDot(segEnd, svg);
+    let cp2 = [segEnd[0] + vecToCP2[0], segEnd[1] + vecToCP2[1]];
+    cp2 = wobbleCP(cp2, cx, cy, wobbleLevel, wobbleDirection);
+
+    path += `C ${cp1[0].toPrecision(3)} ${cp1[1].toPrecision(3)}, ${cp2[0].toPrecision(3)} ${cp2[1].toPrecision(3)}, ${segEnd[0].toPrecision(3)} ${segEnd[1].toPrecision(3)}\n`;
+
+    vecStart = vecEnd;
+    wobbleDirection *= -1;
+  }
+
+  return path;
+}
+
+function getSpotOnOriginEllipse(angle, rx, ry) {
+  return [Math.cos(angle) * rx, Math.sin(angle) * ry];
+}
+
+function addDot(pt, parent) {
+  var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  dot.setAttribute('cx', pt[0]);
+  dot.setAttribute('cy', pt[1]);
+  dot.setAttribute('r', 0.1);
+  dot.setAttribute('fill', 'hsl(110, 80%, 50%)');
+  parent.appendChild(dot);
+}
+
+function wobbleCP(cp, cx, cy, wobbleLevel, wobbleDirection) {
+  if (wobbleLevel > 0.0) {
+    // Direction: center to cp * wobbleDirection. Magnitude: wobbleLevel
+    let centerToCP = [cp[0] - cx, cp[1] - cy];
+    const centerToCPLength = Math.sqrt(centerToCP[0] * centerToCP[0] + centerToCP[1] * centerToCP[1]);
+    let cpWobbleVec = [centerToCP[0]/centerToCPLength * wobbleDirection * wobbleLevel, centerToCP[1]/centerToCPLength * wobbleDirection * wobbleLevel];
+    return [cp[0] + cpWobbleVec[0], cp[1] + cpWobbleVec[1]];
+  }
+  return cp;
+}
+
+function setAnimatedPath() {
+  animatedPath.setAttribute('d', getEllipsePath(5, 5, 4, 20, animationBoard, 0.5, lastWobbleDirection));
+  lastWobbleDirection *= -1;
+  setTimeout(() => window.requestAnimationFrame(setAnimatedPath), 1000/2);
+}
+
+function setPulsePath(t) {
+  if (t - lastPulseT < pulseUpdateInterval) {
+    window.requestAnimationFrame(setPulsePath);
+    return;
+  }
+
+  lastPulseT = t;
+
+  const pulseVal = Math.sin(pulseStep);
+  const pulseDirection = pulseVal > 0 ? 1 : -1;
+  pulsePath.setAttribute('d', getEllipsePath(5, 5, 4, 20, pulseBoard, Math.abs(pulseVal), pulseDirection));
+
+  pulseStep += Math.PI/8;
+  window.requestAnimationFrame(setPulsePath);
+}
+
+</script>
+</body>
+</html>
