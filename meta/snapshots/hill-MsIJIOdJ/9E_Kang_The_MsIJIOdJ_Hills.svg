@@ -14,7 +14,7 @@
    preserveAspectRatio="none"
    version="1.1"
    id="svg2149"
-   sodipodi:docname="hill-MsIJIOdJ.svg"
+   sodipodi:docname="9E_Kang_The_MsIJIOdJ_Hills.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
   <metadata
      id="metadata2155">
@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -43,13 +43,13 @@
      inkscape:window-height="1025"
      id="namedview2151"
      showgrid="false"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="568.83529"
-     inkscape:cy="456.84689"
+     inkscape:zoom="1"
+     inkscape:cx="541.2026"
+     inkscape:cy="296.84689"
      inkscape:window-x="67"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2149" />
+     inkscape:current-layer="g2146" />
   <clipPath
      id="cut-off-bottom">
     <rect
@@ -72,45 +72,46 @@
        height="100"
        style="fill:#000000" />
     <path
-       d="M 0,16 C 13,16 13,1.7507413 26,1.7507413 38.5,1.7507413 38.5,31 51,31 63.5,31 63.5,49 76,49 88,49 88,24 100,24 v 76 H 0 Z"
+       d="M 0,16 C 8.8469619,16.132539 13.001128,10.083231 24.010002,10.100688 38.154964,10.123119 38.5,31 51,31 63.5,31 63.5,49 76,49 88,49 88,24 100,24 v 76 H 0 Z"
        transform="translate(0,22)"
        id="path2132"
        inkscape:connector-curvature="0"
        style="fill:#e27c00;fill-opacity:1"
        sodipodi:nodetypes="cssscccc" />
     <path
-       d="m 0,19 c 18.5,0 18.5,14 37,14 16.5,0 16.5,-21 33,-21 15,0 15,26 30,26 v 62 H 0 Z"
+       d="m 0,19 c 11.751313,0.132539 14.347274,22.416398 29.299575,22.615025 18.92233,0.251364 19.096589,-23.778611 35.595649,-24.048394 16.211303,-0.265077 18.802775,30.968854 34.494948,31.233931 L 100,100 H 0 Z"
        id="path2128"
        inkscape:connector-curvature="0"
-       style="fill:#ff006f;fill-opacity:1" />
+       style="fill:#ff006f;fill-opacity:1"
+       sodipodi:nodetypes="csscccc" />
     <path
-       d="M 0,20 C 13.5,20 13.5,45 27,45 40,45 39.162068,38.590637 52.162068,38.590637 64.662068,38.590637 65.5,42 78,42 89,42 88.999999,27 100,27 v 73 H 0 Z"
+       d="m 0,20 c 13.5,0 13.5,25 27,25 13,0 13.892501,-4.42128 26.892501,-4.42128 12.5,0 10.828804,-4.27789 23.328804,-4.27789 11,0 12.470867,-13.276995 23.470865,-13.276995 L 100,100 H 0 Z"
        transform="translate(0,11)"
        id="path2130"
        inkscape:connector-curvature="0"
        style="fill:#66b04b;fill-opacity:1"
        sodipodi:nodetypes="cssscccc" />
     <path
-       d="M 0,21 C 13.5,21 13.25528,11.249259 26.75528,11.249259 39.25528,11.249259 39.5,32 52,32 64.5,32 64.5,58 77,58 88.5,58 88.5,37 100,37 v 63 H 0 Z"
+       d="m -0.08652163,6.9508828 c 13.49999963,0 18.01396963,19.2752652 31.51396963,19.2752652 12.5,0 15.167325,7.761935 27.667325,7.761935 C 71.594773,33.988083 64.5,58 77,58 88.5,58 88.5,37 100,37 v 63 H 0 Z"
        transform="translate(0,33)"
        id="path2134"
        inkscape:connector-curvature="0"
        style="fill:#1fa446;fill-opacity:1"
        sodipodi:nodetypes="cssscccc" />
     <path
-       d="M 0,17 C 14,17 14,37.563303 28,37.563303 39.5,37.563303 39.5,22 51,22 64.5,22 64.261476,7.364483 77.761476,7.364483 c 11,0 10.993804,15.638482 21.993804,15.638482 L 100,100 H 0 Z"
+       d="m 0,17 c 14,0 13.740435,17.249832 23.846962,17.382371 11.499579,0.150808 15.22043,-24.8410221 26.72043,-24.8410221 13.5,0 8.589308,-17.153755 22.089308,-17.153755 11,0 18.607707,22.7955791 41.11508,23.8558901 L 100,100 H 0 Z"
        transform="translate(0,44)"
        id="path2136"
        inkscape:connector-curvature="0"
        style="fill:#ff4510;fill-opacity:1"
        sodipodi:nodetypes="cssscccc" />
     <path
-       d="M 12.270051,46.581564 C 38.270051,46.581564 26,28 52,28 76,28 76.601473,1.8854317 100.60148,1.8854317 L 100,100 H 0 Z"
-       transform="translate(0,55)"
+       d="m -20.089037,59.040215 c 25.9999997,0 30.774709,-28.787055 56.774709,-28.787055 12,0 14.366633,-17.229917 28.756601,-16.90091 16.363307,0.374125 16.929644,-28.166712 35.418767,-28.564329 L 100,100 H 0 Z"
        id="path2138"
        inkscape:connector-curvature="0"
        style="fill:#ff009a;fill-opacity:1"
-       sodipodi:nodetypes="cscccc" />
+       sodipodi:nodetypes="csscccc"
+       transform="translate(0,55)" />
     <path
        d="M 100,100 C 33.333333,56 66.666667,78 100,100 Z"
        transform="translate(0,66)"
