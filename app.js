@@ -3,13 +3,13 @@ var handleError = require('handle-error-web');
 var renderHills = require('./dom/render-hills');
 var renderControls = require('./dom/render-controls');
 var Probable = require('probable').createProbable;
-var hsl = require('d3-color').hsl;
+//var hsl = require('d3-color').hsl;
 var seedrandom = require('seedrandom');
-var sanzoCombos = require('./sanzo-hex-combos.json');
+//var sanzoCombos = require('./sanzo-hex-combos.json');
 
 var randomId = require('@jimkang/randomid')();
 
-const maxJitter = 5;
+//const maxJitter = 5;
 const minAdjacentColorIndexDist = 2;
 const maxColorPickTries = 5;
 const minNumberOfColorsBeforeRepeating = 5;
@@ -96,16 +96,16 @@ function followRoute({
 
   var probable = Probable({ random: seedrandom(seed) });
 
-  var maxNumberOfLevelsTable = probable.createTableFromSizes([
-    [6, 3],
-    [3, 10],
-    [1, 20]
-  ]);
+  //var maxNumberOfLevelsTable = probable.createTableFromSizes([
+  //[6, 3],
+  //[3, 10],
+  //[1, 20]
+  //]);
 
-  var numberOfInflectionsFnTable = probable.createTableFromSizes([
-    [7, () => 3 + probable.roll(3)],
-    [1, () => 5 + probable.roll(3)]
-  ]);
+  //var numberOfInflectionsFnTable = probable.createTableFromSizes([
+  //[7, () => 3 + probable.roll(3)],
+  //[1, () => 5 + probable.roll(3)]
+  //]);
 
   if (!showHillLines) {
     routeState.addToRoute({
@@ -123,7 +123,7 @@ function followRoute({
     }
     levelSpecs = [];
     let previousColorIndexes = [];
-    let numberOfLevels = probable.rollDie(maxNumberOfLevelsTable.roll());
+    let numberOfLevels = 3; //probable.rollDie(maxNumberOfLevelsTable.roll());
 
     if (minLevels > numberOfLevels) {
       numberOfLevels = minLevels;
@@ -131,12 +131,12 @@ function followRoute({
     if (shouldTweenBetweenPairs) {
       numberOfLevels *= 2;
     }
-    let prevLevelInflectionCount = -1;
+    //let prevLevelInflectionCount = -1;
 
     let palette = hillColors;
-    if (probable.roll(2) === 0) {
-      palette = probable.pickFromArray(sanzoCombos);
-    }
+    //if (probable.roll(2) === 5) {
+    //palette = probable.pickFromArray(sanzoCombos);
+    //}
 
     for (let i = 0; i < numberOfLevels; ++i) {
       let hillColor;
@@ -144,21 +144,63 @@ function followRoute({
       previousColorIndexes.push(colorIndex);
       hillColor = palette[colorIndex];
 
-      let fadeLevel = 0;
-      if (fadeBackLayers === 'yes') {
-        fadeLevel = (numberOfLevels - i - 1) / numberOfLevels / 3;
+      //let fadeLevel = 0;
+      //if (fadeBackLayers === 'yes') {
+      //fadeLevel = (numberOfLevels - i - 1) / numberOfLevels / 3;
+      //}
+      //let fixedNumberOfInflections = -1;
+      switch (i) {
+      case 0:
+        levelSpecs.push(
+          formatLevelSpec({
+            color: hillColor,
+            inflections: ['0,20', '33,5', '65,25', '100,40']
+          })
+        );
+        break;
+      case 1:
+        levelSpecs.push(
+          formatLevelSpec({
+            color: hillColor,
+            inflections: [
+              '0,-5',
+              '19,-18',
+              '42,10',
+              '60,-18',
+              '80,20',
+              '100,-21'
+            ]
+          })
+        );
+        break;
+      case 2:
+        levelSpecs.push(
+          formatLevelSpec({
+            color: hillColor,
+            inflections: [
+              '0,-30',
+              '28,20',
+              '50,0',
+              '60,-5',
+              '75,-20',
+              '100,-10'
+            ]
+          })
+        );
+        break;
+      default:
+        //fixedNumberOfInflections = 5;
       }
-      let fixedNumberOfInflections = -1;
-      if (shouldTweenBetweenPairs && i % 2 === 1) {
-        fixedNumberOfInflections = prevLevelInflectionCount;
-      }
+      //if (shouldTweenBetweenPairs && i % 2 === 1) {
+      //fixedNumberOfInflections = prevLevelInflectionCount;
+      //}
 
-      let { color, inflections } = generateLevelSpec(
-        fade(fadeLevel, hillColor),
-        fixedNumberOfInflections
-      );
-      levelSpecs.push(formatLevelSpec({ color, inflections }));
-      prevLevelInflectionCount = inflections.length;
+      //let { color, inflections } = generateLevelSpec(
+      //fade(fadeLevel, hillColor),
+      //fixedNumberOfInflections,
+      //i
+      //);
+      //prevLevelInflectionCount = inflections.length;
     }
     routeState.addToRoute({ levelSpecs: levelSpecs.join('|') });
   } else {
@@ -210,57 +252,57 @@ function followRoute({
     return colorIndex;
   }
 
-  function generateInflections(fixedNumberOfInflections = -1) {
-    var numberOfInflections = fixedNumberOfInflections;
-    if (numberOfInflections === -1) {
-      numberOfInflections = numberOfInflectionsFnTable.roll()();
-    }
-    var inflections = [];
-    var previousY = 0;
-    var xPositions = [];
-    const minY = 10;
-    const maxYSeparation = 30;
-    const minYSeparation = 10;
-    const xSegmentSize = 100 / (numberOfInflections - 1);
-
-    for (let k = 1; k < numberOfInflections - 1; ++k) {
-      let jitter = probable.roll(maxJitter - (numberOfInflections - 3)) + 1;
-      xPositions.push(~~(k * xSegmentSize) + jitter);
-    }
-    // xPositions.sort();
-    xPositions.unshift(0);
-    xPositions.push(100);
-
-    for (let j = 0; j < numberOfInflections; ++j) {
-      let y = probable.roll(100 - minY) + minY;
-
-      let delta =
-        minYSeparation + probable.roll(maxYSeparation - minYSeparation);
-      delta *= probable.roll(2) === 0 ? -1 : 1;
-      y = previousY + delta;
-      if (y < 0) {
-        y = previousY - delta;
-      }
-      previousY = y;
-
-      inflections.push(`${xPositions[j]},${y}`);
-    }
-    return inflections;
-  }
+  //function generateInflections(fixedNumberOfInflections = -1) {
+  //var numberOfInflections = fixedNumberOfInflections;
+  //if (numberOfInflections === -1) {
+  //numberOfInflections = numberOfInflectionsFnTable.roll()();
+  //}
+  //var inflections = [];
+  //var previousY = 0;
+  //var xPositions = [];
+  //const minY = 10;
+  //const maxYSeparation = 30;
+  //const minYSeparation = 10;
+  //const xSegmentSize = 100 / (numberOfInflections - 1);
+  //
+  //for (let k = 1; k < numberOfInflections - 1; ++k) {
+  //let jitter = probable.roll(maxJitter - (numberOfInflections - 3)) + 1;
+  //xPositions.push(~~(k * xSegmentSize) + jitter);
+  //}
+  //// xPositions.sort();
+  //xPositions.unshift(0);
+  //xPositions.push(100);
+  //
+  //for (let j = 0; j < numberOfInflections; ++j) {
+  //let y = probable.roll(100 - minY) + minY;
+  //
+  //let delta =
+  //minYSeparation + probable.roll(maxYSeparation - minYSeparation);
+  //delta *= probable.roll(2) === 0 ? -1 : 1;
+  //y = previousY + delta;
+  //if (y < 0) {
+  //y = previousY - delta;
+  //}
+  //previousY = y;
+  //
+  //inflections.push(`${xPositions[j]},${y}`);
+  //}
+  //return inflections;
+  //}
 
   // A level spec is an array. The first element is the color. The rest
   // are the extremes in the hills.
-  function generateLevelSpec(color, fixedNumberOfInflections) {
-    return {
-      color,
-      inflections: generateInflections(fixedNumberOfInflections)
-    };
-  }
+  //function generateLevelSpec(color, fixedNumberOfInflections) {
+  //return {
+  //color,
+  //inflections: generateInflections(fixedNumberOfInflections)
+  //};
+  //}
 }
 
 function onRoll() {
-  routeState.removeFromRoute('fadeBackLayers', false);
-  routeState.removeFromRoute('showHillLines', false);
+  //routeState.removeFromRoute('fadeBackLayers', false);
+  //routeState.removeFromRoute('showHillLines', false);
   routeState.removeFromRoute('levelSpecs', false);
   routeState.removeFromRoute('seed');
 }
@@ -293,15 +335,15 @@ function reportTopLevelError(msg, url, lineNo, columnNo, error) {
   handleError(error);
 }
 
-function fade(level, clrString) {
-  var clr = hsl(clrString);
-  clr.s -= level;
-  clr.l -= level / 3;
-  if (clr.l < 0.2) {
-    clr.l = 0.2;
-  }
-  return clr.toString();
-}
+//function fade(level, clrString) {
+//var clr = hsl(clrString);
+//clr.s -= level;
+//clr.l -= level / 3;
+//if (clr.l < 0.2) {
+//clr.l = 0.2;
+//}
+//return clr.toString();
+//}
 
 // function aIsToTheLeftOfB(a, b) {
 //   return a[0] < b[0] ? -1 : 1;
