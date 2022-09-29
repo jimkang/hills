@@ -28,7 +28,7 @@
   "dependencies": {
     "@jimkang/randomid": "^1.0.2",
     "basic-browser-request": "^8.0.0",
-    "d3-color": "^1.2.8",
+    "d3-color": "^3.1.0",
     "d3-ease": "^1.0.3",
     "d3-selection": "^1.2.0",
     "d3-transition": "^1.1.1",
